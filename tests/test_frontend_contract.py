@@ -16,10 +16,10 @@ from backend.main import app
 client = TestClient(app)
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
-INDEX_HTML_PATH = os.path.join(FRONTEND_DIR, "index.html")
-STYLE_CSS_PATH = os.path.join(FRONTEND_DIR, "css", "style.css")
-APP_JS_PATH = os.path.join(FRONTEND_DIR, "js", "app.js")
+PUBLIC_DIR = os.path.join(PROJECT_ROOT, "public")
+INDEX_HTML_PATH = os.path.join(PUBLIC_DIR, "index.html")
+STYLE_CSS_PATH = os.path.join(PUBLIC_DIR, "css", "style.css")
+APP_JS_PATH = os.path.join(PUBLIC_DIR, "js", "app.js")
 
 
 # ==============================================================================
@@ -30,13 +30,14 @@ class TestFrontendBackendAPIContract:
     """Verifies that the FastAPI backend strictly fulfills the contract needed by the frontend."""
 
     def test_serve_frontend_index_and_static_assets(self):
-        """GET / serves frontend/index.html with HTTP 200; CSS and JS assets return HTTP 200 and no-store headers."""
+        """GET / serves public/index.html (no-store); CSS and JS are served with revalidation (no-cache)."""
         # 1. Root index.html
         res_index = client.get("/")
         assert res_index.status_code == 200
         assert "text/html" in res_index.headers.get("content-type", "")
         assert "no-store" in res_index.headers.get("cache-control", "")
-        with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
+        # newline="" keeps the file's exact line endings, matching the bytes served.
+        with open(INDEX_HTML_PATH, "r", encoding="utf-8", newline="") as f:
             expected_html = f.read()
         assert res_index.text == expected_html
 
@@ -44,25 +45,32 @@ class TestFrontendBackendAPIContract:
         res_css = client.get("/css/style.css")
         assert res_css.status_code == 200
         assert "text/css" in res_css.headers.get("content-type", "")
-        assert "no-store" in res_css.headers.get("cache-control", "")
-        assert "no-cache" in res_css.headers.get("cache-control", "")
+        assert res_css.headers.get("cache-control") == "no-cache"
+        assert res_css.headers.get("etag")
         assert len(res_css.text) > 0
 
         # 3. Application JavaScript
         res_js = client.get("/js/app.js")
         assert res_js.status_code == 200
-        assert "no-store" in res_js.headers.get("cache-control", "")
-        assert "no-cache" in res_js.headers.get("cache-control", "")
+        assert res_js.headers.get("cache-control") == "no-cache"
+        assert res_js.headers.get("etag")
         assert len(res_js.text) > 0
 
-    def test_static_cache_control_headers_disable_caching(self):
-        """Verify GET /js/app.js and GET /css/style.css explicitly return Cache-Control: no-store, no-cache, must-revalidate, max-age=0."""
-        for path in ["/css/style.css", "/js/app.js", "/"]:
+    def test_static_cache_control_headers(self):
+        """HTML shell and API are never cached; static assets must revalidate and support 304."""
+        for path in ["/", "/api/health"]:
             res = client.get(path)
             assert res.status_code == 200
             assert res.headers.get("Cache-Control") == "no-store, no-cache, must-revalidate, max-age=0"
             assert res.headers.get("Pragma") == "no-cache"
             assert res.headers.get("Expires") == "0"
+        for path in ["/css/style.css", "/js/app.js"]:
+            res = client.get(path)
+            assert res.status_code == 200
+            assert res.headers.get("Cache-Control") == "no-cache"
+            etag = res.headers.get("etag")
+            assert etag
+            assert client.get(path, headers={"If-None-Match": etag}).status_code == 304
 
     def test_presets_default_traffic_multiplier_all_unity(self):
         """Verify every edge in campus_navigator and india_highways starts with traffic_multiplier == 1.0."""
@@ -77,15 +85,15 @@ class TestFrontendBackendAPIContract:
                     )
 
     def test_cache_busting_query_strings_in_index_html(self):
-        """Verify frontend/index.html includes ?v= cache-busting query strings on css/style.css and js/app.js."""
+        """Verify public/index.html includes ?v= cache-busting query strings on css/style.css and js/app.js."""
         with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
             html_content = f.read()
 
         assert re.search(r'href=["\']css/style\.css\?v=[a-zA-Z0-9_-]+["\']', html_content), (
-            "frontend/index.html must link to css/style.css with a ?v= cache-busting parameter"
+            "public/index.html must link to css/style.css with a ?v= cache-busting parameter"
         )
         assert re.search(r'src=["\']js/app\.js\?v=[a-zA-Z0-9_-]+["\']', html_content), (
-            "frontend/index.html must load js/app.js with a ?v= cache-busting parameter"
+            "public/index.html must load js/app.js with a ?v= cache-busting parameter"
         )
 
     def test_get_graph_contract_campus_navigator(self):
@@ -302,8 +310,8 @@ class TestFrontendDOMAndJSIntegrity:
 
     def test_all_js_get_element_by_id_exist_in_html(self):
         """
-        Parse frontend/index.html and frontend/js/app.js:
-        Every getElementById('...') in frontend/js/app.js corresponds to an existing id="..." in frontend/index.html.
+        Parse public/index.html and public/js/app.js:
+        Every getElementById('...') in public/js/app.js corresponds to an existing id="..." in public/index.html.
         """
         with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
             html_content = f.read()
@@ -329,11 +337,11 @@ class TestFrontendDOMAndJSIntegrity:
         with open(APP_JS_PATH, "r", encoding="utf-8") as f:
             js_content = f.read()
 
-        assert "btn-sidebar-reset" not in html_content, "btn-sidebar-reset still present in frontend/index.html"
-        assert "btn-sidebar-reset" not in js_content, "btn-sidebar-reset still present in frontend/js/app.js"
+        assert "btn-sidebar-reset" not in html_content, "btn-sidebar-reset still present in public/index.html"
+        assert "btn-sidebar-reset" not in js_content, "btn-sidebar-reset still present in public/js/app.js"
 
     def test_refresh_graph_data_unwraps_graph(self):
-        """Verify refreshGraphData in frontend/js/app.js unwraps .graph from API.getGraph()."""
+        """Verify refreshGraphData in public/js/app.js unwraps .graph from API.getGraph()."""
         with open(APP_JS_PATH, "r", encoding="utf-8") as f:
             js_content = f.read()
 
@@ -353,15 +361,15 @@ class TestFrontendDOMAndJSIntegrity:
         assert has_graph_unwrap, "refreshGraphData does not unwrap .graph from API.getGraph() payload"
 
     def test_harsh_neon_green_removed_from_css_and_js(self):
-        """Verify harsh neon green #5effb1 is removed from frontend/css/style.css and frontend/js/app.js."""
+        """Verify harsh neon green #5effb1 is removed from public/css/style.css and public/js/app.js."""
         with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
             css_content = f.read().lower()
 
         with open(APP_JS_PATH, "r", encoding="utf-8") as f:
             js_content = f.read().lower()
 
-        assert "#5effb1" not in css_content, "Harsh neon green #5effb1 found in frontend/css/style.css"
-        assert "#5effb1" not in js_content, "Harsh neon green #5effb1 found in frontend/js/app.js"
+        assert "#5effb1" not in css_content, "Harsh neon green #5effb1 found in public/css/style.css"
+        assert "#5effb1" not in js_content, "Harsh neon green #5effb1 found in public/js/app.js"
 
     def test_marker_hover_popup_and_card_sync(self):
         """Verify marker hover popup and sidebar destination card hover sync are implemented."""
@@ -415,8 +423,8 @@ class TestFrontendDOMAndJSIntegrity:
     def test_only_selected_route_highlighted_and_marker_anchor_aligned(self):
         """
         Verify:
-        1. .outlet-marker-wrapper in frontend/css/style.css does NOT contain translate(-50%, -50%).
-        2. iconSize: [44, 44] and iconAnchor: [22, 22] are used in frontend/js/app.js.
+        1. .outlet-marker-wrapper in public/css/style.css does NOT contain translate(-50%, -50%).
+        2. iconSize: [44, 44] and iconAnchor: [22, 22] are used in public/js/app.js.
         3. updatePlayerUI checks isPlayerVisible || state.stepPlayer.isPlaying before calling renderStepOnMap.
         4. Background graph edges do NOT highlight unselected traffic roads in amber/orange.
         """

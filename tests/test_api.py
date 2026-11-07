@@ -341,7 +341,7 @@ def test_node_auto_slugify_and_duplicate_slug():
 def test_delete_node_removes_incident_edges():
     # Add temporary node and connect to delhi
     client.post("/api/node", json={"id": "temp_city", "name": "Temp City", "lat": 28.0, "lng": 77.0})
-    client.post("/api/edge", json={"source": "delhi", "target": "temp_city", "base_distance_km": 50.0})
+    client.post("/api/edge", json={"source": "delhi", "target": "temp_city", "base_distance_km": 80.0})
 
     assert "temp_city" in app_state.graph.adjacency_list["delhi"]
 

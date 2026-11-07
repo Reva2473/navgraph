@@ -159,14 +159,45 @@
   // =========================================================================
   // 4. API CLIENT (FASTAPI BACKEND INTEGRATION)
   // =========================================================================
+  // Each tab gets its own server-side graph, so edits never leak between visitors.
+  const SESSION_ID = (() => {
+    const make = () => (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : `s-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+    try {
+      let id = sessionStorage.getItem('navgraph_session');
+      if (!id || !/^[A-Za-z0-9-]{8,64}$/.test(id)) {
+        id = make();
+        sessionStorage.setItem('navgraph_session', id);
+      }
+      return id;
+    } catch (_) {
+      return make();
+    }
+  })();
+
+  function formatErrorDetail(detail) {
+    if (typeof detail === 'string') return detail;
+    if (Array.isArray(detail)) {
+      // FastAPI validation errors: [{loc, msg, ...}]
+      return detail.map(d => {
+        const field = Array.isArray(d.loc) ? d.loc[d.loc.length - 1] : '';
+        return field ? `${field}: ${d.msg}` : d.msg;
+      }).join('; ');
+    }
+    if (detail && detail.message) return detail.message;
+    return JSON.stringify(detail);
+  }
+
   const API = {
     baseUrl: '',
 
-    async request(endpoint, options = {}) {
+    async request(endpoint, options = {}, retried = false) {
       const url = `${this.baseUrl}${endpoint}`;
       const defaultHeaders = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-Session-Id': SESSION_ID
       };
 
       try {
@@ -177,14 +208,17 @@
 
         if (!response.ok) {
           let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+          let errorJson = null;
           try {
-            const errorJson = await response.json();
-            if (errorJson.detail) {
-              errorDetail = typeof errorJson.detail === 'string'
-                ? errorJson.detail
-                : JSON.stringify(errorJson.detail);
-            }
+            errorJson = await response.json();
+            if (errorJson.detail) errorDetail = formatErrorDetail(errorJson.detail);
           } catch (_) { }
+
+          // Server instance lost this session (serverless cold start): re-upload the graph and retry once.
+          if (response.status === 409 && errorJson?.detail?.code === 'session_expired' && !retried) {
+            await this.restoreSession();
+            return this.request(endpoint, options, true);
+          }
           throw new Error(errorDetail);
         }
 
@@ -193,6 +227,36 @@
         console.error(`API Request Failed [${options.method || 'GET'} ${url}]:`, err);
         throw err;
       }
+    },
+
+    async restoreSession() {
+      const nodes = state.graph.nodes || [];
+      if (nodes.length === 0) {
+        // Nothing local to restore yet; start from the preset.
+        return this.request(`/api/presets/${encodeURIComponent(state.activePreset)}/load`, { method: 'POST' }, true);
+      }
+      const adjacency = {};
+      for (const [src, edges] of Object.entries(state.graph.adjacency_list || {})) {
+        adjacency[src] = (edges || []).map(e => ({
+          target: e.target,
+          base_distance_km: e.base_distance_km,
+          road_name: e.road_name,
+          traffic_multiplier: e.traffic_multiplier,
+          is_blocked: e.is_blocked,
+          speed_limit_kmh: e.speed_limit_kmh
+        }));
+      }
+      return this.request('/api/session/restore', {
+        method: 'POST',
+        body: JSON.stringify({
+          preset: state.activePreset,
+          nodes: nodes.map(n => ({
+            id: n.id, name: n.name, lat: n.lat, lng: n.lng,
+            category: n.category || 'custom', description: n.description || ''
+          })),
+          adjacency_list: adjacency
+        })
+      }, true);
     },
 
     healthCheck() {
@@ -1587,7 +1651,7 @@
     const buildOptions = () => {
       let html = '<option value="">-- Choose Vertex --</option>';
       (state.graph.nodes || []).forEach(n => {
-        html += `<option value="${n.id}">${escapeHtml(n.name)}</option>`;
+        html += `<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`;
       });
       return html;
     };
@@ -1709,9 +1773,8 @@
       return;
     }
 
-    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-
-    const payload = { id, name, lat, lng, category, description };
+    // The server generates a unique ID from the name.
+    const payload = { name, lat, lng, category, description };
 
     try {
       await API.addNode(payload);

@@ -4,9 +4,8 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Leaflet.js](https://img.shields.io/badge/Leaflet-1.9.4-199900?logo=leaflet&logoColor=white)](https://leafletjs.com/)
 [![Tests](https://img.shields.io/badge/Tests-Pytest%20Passing-brightgreen?logo=pytest&logoColor=white)](https://docs.pytest.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An academic, production-grade map navigation engine and data structure visualizer built from first principles in pure Python (zero external DSA dependencies) and served via FastAPI with an interactive Leaflet.js frontend.
+An academic map navigation engine and data structure visualizer built from first principles in pure Python (zero external DSA dependencies) and served via FastAPI with an interactive Leaflet.js frontend.
 
 ---
 
@@ -108,7 +107,9 @@ navgraph/
 │   │   ├── graph.py               # WeightedGraph, Node, Edge, and Haversine formula
 │   │   └── structures.py          # Array-backed MinHeap, Linked FIFOQueue, LIFOStack
 │   └── main.py                    # FastAPI server, REST routes & static asset serving
-├── frontend/
+├── api/
+│   └── index.py                   # Vercel serverless entrypoint
+├── public/
 │   ├── css/
 │   │   └── style.css              # Dark-matte cartography stylesheet & design tokens
 │   ├── js/
@@ -117,9 +118,11 @@ navgraph/
 ├── tests/
 │   ├── test_api.py                # FastAPI endpoint integration test suite
 │   ├── test_dsa_and_api.py        # Core DSA structure & optimality test suite
-│   └── test_frontend_contract.py  # End-to-end API-frontend contract verification
+│   ├── test_frontend_contract.py  # End-to-end API-frontend contract verification
+│   └── test_sessions_and_fixes.py # Sessions, input validation & algorithm regressions
 ├── Dockerfile                     # Production containerization
-├── requirements.txt               # Python package dependencies
+├── requirements.txt               # Runtime dependencies
+├── requirements-dev.txt           # Test dependencies (pytest, httpx)
 ├── run_project.py                 # Single-command launcher
 └── README.md                      # Comprehensive system documentation
 ```
@@ -198,17 +201,25 @@ The backend serves an automated interactive Swagger UI at `http://localhost:8000
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/health` | None | Service status, engine version, and active graph summary. |
 | `GET` | `/api/presets` | None | Metadata of all available preset maps (`india_highways`, `campus_navigator`). |
-| `POST` | `/api/presets/{preset_id}/load` | Path: `preset_id` (`india_highways` / `campus_navigator`) | Loads the specified graph dataset into the active engine memory. |
-| `GET` | `/api/graph` | None | Complete topology: list of all nodes, edges, traffic factors, and coordinates. |
-| `POST` | `/api/route` | JSON: `{start, target, algorithm, weight_mode}` | Computes path, total distance, travel time, nodes explored, and animation frontier. |
-| `POST` | `/api/compare` | JSON: `{start, target, weight_mode}` | Executes Dijkstra, A\*, BFS, and DFS in parallel, returning comparative benchmarks. |
-| `POST` | `/api/node` | JSON: `{id, label, lat, lon}` | Dynamically adds a new node to the active graph. |
+| `POST` | `/api/presets/{preset_id}/load` | Path: `preset_id` (`india_highways` / `campus_navigator`) | Loads the preset into the caller's graph. |
+| `POST` | `/api/session/restore` | JSON: `{preset, nodes, adjacency_list}` + `X-Session-Id` header | Rebuilds a session graph from a client snapshot. |
+| `GET` | `/api/graph` | Query: `preset?` | Complete topology: nodes, edges, adjacency list, traffic factors, and stats. |
+| `POST` | `/api/route` | JSON: `{source, target, waypoints?, algorithm, weight_mode}` | Path, distance, travel time, nodes explored, and animation steps. |
+| `POST` | `/api/multi-stop` | JSON: `{waypoints, algorithm, weight_mode}` | Stitched multi-leg itinerary. |
+| `POST` | `/api/compare` | JSON: `{source, target, weight_mode}` | Runs Dijkstra, A\*, BFS, and DFS and returns a comparison table. |
+| `POST` | `/api/node` | JSON: `{id?, name, lat, lng, category?, description?}` | Adds a node (ID generated from the name if omitted). |
 | `DELETE` | `/api/node/{node_id}` | Path: `node_id` | Deletes a node and removes all incident edges. |
-| `POST` | `/api/edge` | JSON: `{u, v, distance?, speed_limit?, traffic_multiplier?, is_blocked?, one_way?}` | Adds an edge (auto-computes Haversine distance if omitted). |
-| `DELETE` | `/api/edge` | Query/JSON: `u`, `v` | Removes an edge connecting nodes `u` and `v`. |
-| `PATCH` | `/api/edge/traffic` | JSON: `{u, v, traffic_multiplier?, is_blocked?}` | Updates congestion factor or marks road as closed/blocked. |
-| `POST` | `/api/graph/simulate-traffic` | JSON: `{intensity: "light"|"medium"|"heavy"}` | Injects randomized realistic traffic delays across edge corridors. |
-| `POST` | `/api/graph/reset-traffic` | None | Restores all edge traffic multipliers to `1.0` and clears all roadblocks. |
+| `POST` | `/api/edge` | JSON: `{source, target, base_distance_km?, road_name?, traffic_multiplier?, is_blocked?, speed_limit_kmh?, bidirectional?}` | Adds an edge (Haversine x 1.15 if distance omitted). |
+| `DELETE` | `/api/edge` | Query: `source`, `target`, `bidirectional?` | Removes an edge. |
+| `PATCH` | `/api/edge/traffic` | JSON: `{source, target, traffic_multiplier?, is_blocked?, bidirectional?}` | Updates congestion factor or closes a road. |
+| `POST` | `/api/graph/simulate-traffic` | JSON: `{congestion_probability?, block_probability?, reset?}` | Randomized congestion and up to 3 road closures. |
+| `POST` | `/api/graph/reset-traffic` | None | Restores all multipliers to `1.0` and clears roadblocks. |
+
+### Sessions & Limits
+- The web UI sends an `X-Session-Id` header so every browser tab gets its own private graph; edits never affect other visitors.
+- Requests without the header (Swagger UI, curl) share one default graph.
+- On serverless hosts a request may reach an instance that has never seen the session. The API then answers `409` with `code: "session_expired"`, and the UI re-uploads its graph via `/api/session/restore` and retries automatically.
+- Input limits: latitude -90..90, longitude -180..180, node IDs `[A-Za-z0-9_-]{1,64}`, at most 200 nodes and 4000 directed edges per graph, traffic multiplier 1.0..10.0. Road lengths shorter than the straight-line distance are rejected so the A\* heuristic stays admissible.
 
 ---
 
@@ -216,11 +227,11 @@ The backend serves an automated interactive Swagger UI at `http://localhost:8000
 
 ### 1. National Highways of India (`india_highways`)
 - **18 Major Metro & Transit Hubs**: New Delhi, Chandigarh, Jaipur, Lucknow, Ahmedabad, Bhopal, Patna, Guwahati, Kolkata, Mumbai, Pune, Nagpur, Bhubaneswar, Hyderabad, Visakhapatnam, Bengaluru, Chennai, Kochi.
-- **Real-world Corridors**: Modeled after the Golden Quadrilateral and major National Highways (NH48, NH44, NH19, NH16) with accurate latitude/longitude, highway speed limits (80–120 km/h), and coastal geometry overrides preventing routes from cutting across the Bay of Bengal.
+- **Real-world Corridors**: Modeled after the Golden Quadrilateral and major National Highways (NH48, NH44, NH19, NH16) with approximate road distances, real city coordinates, and highway speed limits (70–110 km/h).
 
 ### 2. NSUT Dwarka Campus (`campus_navigator`)
-- **14 Campus Landmarks (Sector 3, Dwarka, New Delhi)**: NSUT Main Gate (Azad Hind Fauj Marg), Nescii Lawns & Netaji Statue, Administrative Block (VC Office), Central Library & SAC, Block 5 (CSE & IT Dept), Block 4 (ECE & Biotech Dept), Block 6 & Connecting Block (ICE/EE), APJ Abdul Kalam Lecture Complex, Students' Centre (Amul & Canteen), North Scholars Hostel, South Residency Hostel, Olympic Sports Complex, 24x7 Campus Hospital, Dwarka Sector 14 Metro Station Gate.
-- **Internal Walkways & Campus Avenues**: Modeled with realistic pedestrian walking speeds (4–6 km/h) and real OpenStreetMap GPS coordinates.
+- **14 Campus Landmarks (Sector 3, Dwarka, New Delhi)**: NSUT Main Gate (Azad Hind Fauj Marg), Nescii Lawns & Netaji Statue, Administrative Block (VC Office), Central Library & SAC, Block 5 (CSE & IT Dept), Block 4 (ECE & Biotech Dept), Block 6 & Connecting Block (ICE/EE), APJ Abdul Kalam Lecture Complex, Students' Centre (Amul & Canteen), Boys Hostels, Girls Hostels, NSUT Sports Complex, Moksha Ground & Medical Centre, NSUT North Gate.
+- **Internal Walkways & Campus Avenues**: Modeled with internal campus speed limits (15–20 km/h) and approximate GPS coordinates.
 
 ---
 
@@ -232,12 +243,12 @@ The backend serves an automated interactive Swagger UI at `http://localhost:8000
 
 ### Step 1: Clone or Navigate to Project Directory
 ```powershell
-cd c:\Users\Ranja\Desktop\dsa\PROJECT
+cd navgraph
 ```
 
 ### Step 2: Install Required Dependencies
 ```powershell
-pip install fastapi uvicorn httpx pytest
+pip install -r requirements-dev.txt
 ```
 
 ### Step 3: Launch the Full-Stack Application
@@ -263,7 +274,7 @@ The project includes an exhaustive automated test suite covering all data struct
 
 Execute the test suite with `pytest`:
 ```powershell
-pytest -v tests/test_dsa_and_api.py
+pytest -v
 ```
 
 ### What the Test Suite Verifies:

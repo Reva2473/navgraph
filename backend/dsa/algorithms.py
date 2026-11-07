@@ -56,6 +56,7 @@ def _build_route_result(
             "distance_km": 0.0,
             "effective_cost": 0.0,
             "total_cost": 0.0,
+            "weighted_cost": 0.0,
             "estimated_time_min": 0.0,
             "hop_count": 0,
             "nodes_explored": nodes_explored,
@@ -72,6 +73,7 @@ def _build_route_result(
 
     total_distance_km = 0.0
     effective_cost = 0.0
+    weighted_cost = 0.0
     estimated_time_min = 0.0
     directions: List[Dict[str, Any]] = []
 
@@ -98,6 +100,7 @@ def _build_route_result(
 
         total_distance_km += dist
         effective_cost += eff_wt
+        weighted_cost += dist if weight_mode == "distance" else eff_wt
         estimated_time_min += est_time
 
         from_name = graph.nodes[u].name if u in graph.nodes else u
@@ -132,6 +135,7 @@ def _build_route_result(
         "distance_km": round(total_distance_km, 2),
         "effective_cost": round(effective_cost, 2),
         "total_cost": round(effective_cost, 2),
+        "weighted_cost": round(weighted_cost, 2),
         "estimated_time_min": round(estimated_time_min, 1),
         "hop_count": max(0, len(path) - 1),
         "nodes_explored": nodes_explored,
@@ -584,7 +588,7 @@ def bfs_shortest_hops(
                 "visited_nodes": list(visited),
                 "explored_edges": explored_edges,
                 "frontier": queue.to_list(),
-                "distances": hops,
+                "distances": dict(hops),
                 "message": f"Target '{u_name}' reached in {hops[u]} hops.",
             })
             break
@@ -620,7 +624,7 @@ def bfs_shortest_hops(
             "visited_nodes": list(visited),
             "explored_edges": explored_edges,
             "frontier": queue.to_list(),
-            "distances": hops,
+            "distances": dict(hops),
             "message": f"Dequeued {u_name} (hop level {hops[u]}); enqueued {enqueued_count} unvisited neighbors.",
         })
 
@@ -726,24 +730,32 @@ def dfs_path(
             message="Source and Destination are identical.",
         )
 
+    # Stack entries are (node, parent) so a node's parent is fixed when it is
+    # actually visited, giving the true DFS tree path rather than the first discoverer.
     stack = LIFOStack()
-    stack.push(start_id)
+    stack.push((start_id, None))
 
     visited: Set[str] = set()
-    prev: Dict[str, Optional[str]] = {start_id: None}
+    prev: Dict[str, Optional[str]] = {}
+    depth: Dict[str, int] = {}
     steps: List[Dict[str, Any]] = []
 
     frontier_peak = 1
     step_num = 0
     target_found = False
 
+    def frontier_ids() -> List[str]:
+        return [n for n, _ in stack.to_list()]
+
     while not stack.is_empty():
         frontier_peak = max(frontier_peak, len(stack))
-        u = stack.pop()
+        u, parent = stack.pop()
 
         if u in visited:
             continue
         visited.add(u)
+        prev[u] = parent
+        depth[u] = 0 if parent is None else depth[parent] + 1
 
         u_name = graph.nodes[u].name if u in graph.nodes else u
         explored_edges: List[List[str]] = []
@@ -758,16 +770,15 @@ def dfs_path(
                 "current_node_name": u_name,
                 "visited_nodes": list(visited),
                 "explored_edges": explored_edges,
-                "frontier": stack.to_list(),
-                "distances": {n: 1 for n in visited},
-                "message": f"Target '{u_name}' found via DFS traversal.",
+                "frontier": frontier_ids(),
+                "distances": dict(depth),
+                "message": f"Target '{u_name}' found via DFS traversal at depth {depth[u]}.",
             })
             break
 
         outgoing_edges = graph.get_neighbors(u)
         pushed_count = 0
 
-        # Push neighbors onto stack
         for edge in outgoing_edges:
             if edge.is_blocked:
                 continue
@@ -776,9 +787,7 @@ def dfs_path(
             explored_edges.append([u, v])
 
             if v not in visited:
-                if v not in prev:
-                    prev[v] = u
-                stack.push(v)
+                stack.push((v, u))
                 pushed_count += 1
 
         step_num += 1
@@ -789,9 +798,9 @@ def dfs_path(
             "current_node_name": u_name,
             "visited_nodes": list(visited),
             "explored_edges": explored_edges,
-            "frontier": stack.to_list(),
-            "distances": {n: 1 for n in visited},
-            "message": f"Popped {u_name} from stack; pushed {pushed_count} unexplored branches.",
+            "frontier": frontier_ids(),
+            "distances": dict(depth),
+            "message": f"Popped {u_name} from stack (depth {depth[u]}); pushed {pushed_count} unexplored branches.",
         })
 
     if not target_found or end_id not in prev:
@@ -875,6 +884,7 @@ def multi_stop_route(
             "legs": [],
             "source": waypoints[0] if waypoints else "",
             "target": waypoints[-1] if waypoints else "",
+            "weight_mode": weight_mode,
             "path": [],
             "path_coordinates": [],
             "path_nodes": [],
@@ -882,6 +892,7 @@ def multi_stop_route(
             "distance_km": 0.0,
             "effective_cost": 0.0,
             "total_cost": 0.0,
+            "weighted_cost": 0.0,
             "estimated_time_min": 0.0,
             "hop_count": 0,
             "nodes_explored": 0,
@@ -899,6 +910,7 @@ def multi_stop_route(
 
     total_distance_km = 0.0
     effective_cost = 0.0
+    weighted_cost = 0.0
     estimated_time_min = 0.0
     total_explored = 0
     max_peak = 0
@@ -922,11 +934,15 @@ def multi_stop_route(
                 "legs": legs,
                 "source": waypoints[0],
                 "target": waypoints[-1],
+                "weight_mode": weight_mode,
                 "path": [],
                 "path_coordinates": [],
                 "path_nodes": [],
                 "total_distance_km": 0.0,
+                "distance_km": 0.0,
                 "effective_cost": 0.0,
+                "total_cost": 0.0,
+                "weighted_cost": 0.0,
                 "estimated_time_min": 0.0,
                 "hop_count": 0,
                 "nodes_explored": total_explored + leg_res.get("nodes_explored", 0),
@@ -947,6 +963,7 @@ def multi_stop_route(
         # Accumulate metrics
         total_distance_km += leg_res["total_distance_km"]
         effective_cost += leg_res["effective_cost"]
+        weighted_cost += leg_res["weighted_cost"]
         estimated_time_min += leg_res["estimated_time_min"]
         total_explored += leg_res["nodes_explored"]
         max_peak = max(max_peak, leg_res["frontier_peak_size"])
@@ -985,6 +1002,7 @@ def multi_stop_route(
         "distance_km": round(total_distance_km, 2),
         "effective_cost": round(effective_cost, 2),
         "total_cost": round(effective_cost, 2),
+        "weighted_cost": round(weighted_cost, 2),
         "estimated_time_min": round(estimated_time_min, 1),
         "hop_count": max(0, len(combined_path) - 1),
         "nodes_explored": total_explored,
@@ -1020,14 +1038,17 @@ def compare_algorithms(
     for key, _, func in algos:
         results[key] = func(graph, start_id, end_id, weight_mode=weight_mode)
 
-    # Determine minimum cost amongst valid paths
-    valid_costs = [res["effective_cost"] for res in results.values() if res["found"]]
+    # Optimality is judged on the metric being optimised: traffic-adjusted cost in
+    # "effective" mode, physical km in "distance" mode.
+    valid_costs = [res["weighted_cost"] for res in results.values() if res["found"]]
     min_cost = min(valid_costs) if valid_costs else None
 
     comparison_table: List[Dict[str, Any]] = []
     for key, name, _ in algos:
         res = results[key]
-        is_opt = (res["effective_cost"] == min_cost) if (res["found"] and min_cost is not None) else False
+        is_opt = (
+            res["found"] and min_cost is not None and abs(res["weighted_cost"] - min_cost) <= 0.011
+        )
         path_names = [graph.nodes[n].name for n in res["path"] if n in graph.nodes]
 
         comparison_table.append({
@@ -1038,6 +1059,7 @@ def compare_algorithms(
             "path_names": path_names,
             "total_distance_km": res["total_distance_km"],
             "effective_cost": res["effective_cost"],
+            "weighted_cost": res["weighted_cost"],
             "estimated_time_min": res["estimated_time_min"],
             "hop_count": res["hop_count"],
             "nodes_explored": res["nodes_explored"],
@@ -1075,9 +1097,15 @@ def compare_algorithms(
                     f"A* explored {a_exp} nodes compared to {d_exp} by Dijkstra."
                 )
 
-        if astar_res["effective_cost"] == dijkstra_res["effective_cost"]:
+        if abs(astar_res["weighted_cost"] - dijkstra_res["weighted_cost"]) <= 0.011:
             analysis_points.append(
-                "A* achieved the identical mathematically optimal cost as Dijkstra, proving admissibility of the Haversine heuristic."
+                "A* matched Dijkstra's optimal cost, as expected from an admissible heuristic: "
+                "straight-line distance never exceeds the road distance remaining."
+            )
+        else:
+            analysis_points.append(
+                f"A* cost ({astar_res['weighted_cost']}) differs from Dijkstra's optimum "
+                f"({dijkstra_res['weighted_cost']}); the heuristic overestimated on this graph."
             )
 
     if bfs_res["found"] and dijkstra_res["found"]:
@@ -1085,7 +1113,9 @@ def compare_algorithms(
         d_hops = dijkstra_res["hop_count"]
         if b_hops < d_hops:
             analysis_points.append(
-                f"BFS discovered a path with fewer hops ({b_hops} vs {d_hops}), but Dijkstra's route achieved a lower or equal weighted metric."
+                f"BFS discovered a path with fewer hops ({b_hops} vs {d_hops}), but Dijkstra's route has the lower "
+                f"{'distance' if weight_mode == 'distance' else 'traffic-weighted cost'} "
+                f"({dijkstra_res['weighted_cost']} vs {bfs_res['weighted_cost']})."
             )
         else:
             analysis_points.append(
@@ -1094,7 +1124,7 @@ def compare_algorithms(
 
     if dfs_res["found"]:
         analysis_points.append(
-            f"DFS constructed an unweighted exploratory path ({dfs_res['hop_count']} hops, cost {dfs_res['effective_cost']}). "
+            f"DFS constructed an unweighted exploratory path ({dfs_res['hop_count']} hops, cost {dfs_res['weighted_cost']}). "
             f"Unlike Dijkstra or BFS, DFS does not guarantee optimality but exhibits minimal memory overhead."
         )
 

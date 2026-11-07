@@ -22,9 +22,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend and frontend source code
+# Copy backend and static frontend
 COPY backend ./backend
-COPY frontend ./frontend
+COPY public ./public
 COPY run_project.py .
 
 # Expose API & Web interface port

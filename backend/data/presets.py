@@ -71,9 +71,9 @@ def _build_india_highways_graph() -> WeightedGraph:
     highways = [
         # North
         ("delhi", "chandigarh", 245.0, "NH44", 1.0, 90.0),
-        ("delhi", "jaipur", 280.0, "NH48", 1.15, 80.0),  # Moderate traffic corridor
+        ("delhi", "jaipur", 280.0, "NH48", 1.0, 80.0),
         ("delhi", "lucknow", 550.0, "Yamuna / Agra Expy", 1.0, 100.0),
-        ("delhi", "bhopal", 780.0, "NH44", 1.05, 85.0),
+        ("delhi", "bhopal", 780.0, "NH44", 1.0, 85.0),
 
         # Central & Gangetic
         ("jaipur", "ahmedabad", 660.0, "NH48", 1.0, 85.0),
@@ -83,26 +83,26 @@ def _build_india_highways_graph() -> WeightedGraph:
         ("bhopal", "nagpur", 350.0, "NH46", 1.0, 80.0),
 
         # East & Northeast
-        ("patna", "kolkata", 580.0, "NH19", 1.05, 80.0),
+        ("patna", "kolkata", 580.0, "NH19", 1.0, 80.0),
         ("kolkata", "guwahati", 990.0, "NH27", 1.0, 70.0),
         ("kolkata", "bhubaneswar", 440.0, "NH16", 1.0, 85.0),
         ("bhubaneswar", "visakhapatnam", 440.0, "NH16", 1.0, 85.0),
 
         # West & Central
-        ("ahmedabad", "mumbai", 525.0, "NH48 / NE1", 1.10, 90.0),
-        ("mumbai", "pune", 150.0, "Mumbai-Pune Expressway", 1.35, 90.0),  # Pre-configured congestion
+        ("ahmedabad", "mumbai", 525.0, "NH48 / NE1", 1.0, 90.0),
+        ("mumbai", "pune", 150.0, "Mumbai-Pune Expressway", 1.0, 90.0),
         ("mumbai", "nagpur", 700.0, "Samruddhi Mahamarg", 1.0, 110.0),
         ("pune", "nagpur", 710.0, "Samruddhi Mahamarg", 1.0, 110.0),
-        ("pune", "bengaluru", 840.0, "NH48", 1.05, 85.0),
+        ("pune", "bengaluru", 840.0, "NH48", 1.0, 85.0),
 
         # South & Deccan
         ("nagpur", "hyderabad", 500.0, "NH44", 1.0, 85.0),
         ("hyderabad", "visakhapatnam", 620.0, "NH65 / NH16", 1.0, 80.0),
         ("hyderabad", "bengaluru", 570.0, "NH44", 1.0, 90.0),
-        ("hyderabad", "chennai", 630.0, "NH65 / NH16", 1.05, 80.0),
+        ("hyderabad", "chennai", 630.0, "NH65 / NH16", 1.0, 80.0),
         ("visakhapatnam", "chennai", 800.0, "NH16", 1.0, 85.0),
-        ("bengaluru", "chennai", 350.0, "NH48", 1.25, 80.0),  # Pre-configured congestion
-        ("bengaluru", "kochi", 550.0, "NH544", 1.05, 75.0),
+        ("bengaluru", "chennai", 350.0, "NH48", 1.0, 80.0),
+        ("bengaluru", "kochi", 550.0, "NH544", 1.0, 75.0),
         ("chennai", "kochi", 690.0, "NH544 / NH44", 1.0, 75.0),
     ]
 
@@ -154,15 +154,15 @@ def _build_campus_navigator_graph() -> WeightedGraph:
         ("medical_center", "cafeteria", 0.12, "Amul Canteen Lane", 1.0, 15.0),
         ("admin_block", "ece_dept", 0.08, "Block IV Connector", 1.0, 15.0),
         ("admin_block", "innovation_hub", 0.11, "Central Fountain Walk", 1.0, 15.0),
-        ("admin_block", "cafeteria", 0.21, "APJ Avenue", 1.15, 15.0),
-        ("ece_dept", "cs_dept", 0.10, "Connecting Block 8A Corridor", 1.20, 15.0),
+        ("admin_block", "cafeteria", 0.21, "APJ Avenue", 1.0, 15.0),
+        ("ece_dept", "cs_dept", 0.10, "Connecting Block 8A Corridor", 1.0, 15.0),
         ("ece_dept", "hostel_south", 0.30, "South T&P Road", 1.0, 20.0),
         ("cs_dept", "central_library", 0.09, "Library Walkway", 1.0, 15.0),
         ("cs_dept", "innovation_hub", 0.12, "Academic Quad Path", 1.0, 15.0),
         ("cs_dept", "hostel_south", 0.27, "Sarasvati Hostel Road", 1.0, 20.0),
         ("innovation_hub", "central_library", 0.14, "SAC Concourse", 1.0, 15.0),
         ("innovation_hub", "auditorium", 0.18, "Lecture Complex Link", 1.0, 20.0),
-        ("cafeteria", "auditorium", 0.05, "APJ Plaza Walk", 1.25, 15.0),
+        ("cafeteria", "auditorium", 0.05, "APJ Plaza Walk", 1.0, 15.0),
         ("auditorium", "hostel_north", 0.26, "Boys Hostel Road", 1.0, 20.0),
         ("central_library", "sports_arena", 0.22, "Sports Complex Avenue", 1.0, 20.0),
         ("hostel_north", "metro_gate", 0.11, "North Gate Exit Road", 1.0, 20.0),

@@ -958,12 +958,12 @@
         return;
       }
 
-      // 1. Draw glowing mint route on map
-      drawGlowingMintRoute(result.path_coordinates);
-
-      // 2. Update Map Markers & Sidebar List
+      // 1. Update Map Markers & Sidebar List FIRST
       renderGraphOnMap();
       renderSidebarLocationList();
+
+      // 2. Draw glowing mint route on map AFTER renderGraphOnMap()
+      drawGlowingMintRoute(result.path_coordinates);
 
       // 3. Update Floating Detail Card
       updateFloatingDetailCard(result);
@@ -972,6 +972,15 @@
       if (result.steps && result.steps.length > 0) {
         initStepPlayer(result.steps, result.algorithm_name);
       }
+
+      // Explicitly clear step exploration layers unless the DSA player drawer is actively open
+      const playerDrawer = document.getElementById('dsa-player-drawer');
+      const isPlayerDrawerOpen = playerDrawer && playerDrawer.classList.contains('open');
+      if (!isPlayerDrawerOpen && !state.stepPlayer.isPlaying) {
+        state.layers.stepExploration.clearLayers();
+        state.layers.stepCurrentMarker.clearLayers();
+      }
+
       populateDirectionsList(result);
 
     } catch (err) {
@@ -1090,6 +1099,14 @@
     const badge = document.getElementById('player-algo-badge');
     if (badge) badge.textContent = `${algoName || 'Algorithm'} Exploration`;
     updatePlayerUI();
+
+    // Never render Step 0 on map automatically unless the player drawer is explicitly open
+    const playerDrawer = document.getElementById('dsa-player-drawer');
+    const isPlayerDrawerOpen = playerDrawer && playerDrawer.classList.contains('open');
+    if (!isPlayerDrawerOpen && !state.stepPlayer.isPlaying) {
+      state.layers.stepExploration.clearLayers();
+      state.layers.stepCurrentMarker.clearLayers();
+    }
   }
 
   function resetStepPlayer() {

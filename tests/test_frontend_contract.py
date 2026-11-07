@@ -30,11 +30,12 @@ class TestFrontendBackendAPIContract:
     """Verifies that the FastAPI backend strictly fulfills the contract needed by the frontend."""
 
     def test_serve_frontend_index_and_static_assets(self):
-        """GET / serves frontend/index.html with HTTP 200; CSS and JS assets return HTTP 200."""
+        """GET / serves frontend/index.html with HTTP 200; CSS and JS assets return HTTP 200 and no-store headers."""
         # 1. Root index.html
         res_index = client.get("/")
         assert res_index.status_code == 200
         assert "text/html" in res_index.headers.get("content-type", "")
+        assert "no-store" in res_index.headers.get("cache-control", "")
         with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
             expected_html = f.read()
         assert res_index.text == expected_html
@@ -43,13 +44,49 @@ class TestFrontendBackendAPIContract:
         res_css = client.get("/css/style.css")
         assert res_css.status_code == 200
         assert "text/css" in res_css.headers.get("content-type", "")
+        assert "no-store" in res_css.headers.get("cache-control", "")
+        assert "no-cache" in res_css.headers.get("cache-control", "")
         assert len(res_css.text) > 0
 
         # 3. Application JavaScript
         res_js = client.get("/js/app.js")
         assert res_js.status_code == 200
-        assert "javascript" in res_css.headers.get("content-type", "") or res_js.status_code == 200
+        assert "no-store" in res_js.headers.get("cache-control", "")
+        assert "no-cache" in res_js.headers.get("cache-control", "")
         assert len(res_js.text) > 0
+
+    def test_static_cache_control_headers_disable_caching(self):
+        """Verify GET /js/app.js and GET /css/style.css explicitly return Cache-Control: no-store, no-cache, must-revalidate, max-age=0."""
+        for path in ["/css/style.css", "/js/app.js", "/"]:
+            res = client.get(path)
+            assert res.status_code == 200
+            assert res.headers.get("Cache-Control") == "no-store, no-cache, must-revalidate, max-age=0"
+            assert res.headers.get("Pragma") == "no-cache"
+            assert res.headers.get("Expires") == "0"
+
+    def test_presets_default_traffic_multiplier_all_unity(self):
+        """Verify every edge in campus_navigator and india_highways starts with traffic_multiplier == 1.0."""
+        from backend.data.presets import load_preset_graph
+
+        for preset_id in ["campus_navigator", "india_highways"]:
+            graph = load_preset_graph(preset_id)
+            for u, neighbors in graph.adjacency_list.items():
+                for v, edge in neighbors.items():
+                    assert edge.traffic_multiplier == 1.0, (
+                        f"Preset '{preset_id}' edge ({u} -> {v}) has traffic_multiplier {edge.traffic_multiplier} != 1.0"
+                    )
+
+    def test_cache_busting_query_strings_in_index_html(self):
+        """Verify frontend/index.html includes ?v= cache-busting query strings on css/style.css and js/app.js."""
+        with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
+            html_content = f.read()
+
+        assert re.search(r'href=["\']css/style\.css\?v=[a-zA-Z0-9_-]+["\']', html_content), (
+            "frontend/index.html must link to css/style.css with a ?v= cache-busting parameter"
+        )
+        assert re.search(r'src=["\']js/app\.js\?v=[a-zA-Z0-9_-]+["\']', html_content), (
+            "frontend/index.html must load js/app.js with a ?v= cache-busting parameter"
+        )
 
     def test_get_graph_contract_campus_navigator(self):
         """
@@ -405,5 +442,22 @@ class TestFrontendDOMAndJSIntegrity:
 
         # 4. Background graph edges do not light up in amber/orange based on traffic
         assert "edge.traffic_multiplier > 1.0" not in js_content
+
+        # 5. Active route is drawn after renderGraphOnMap() so it stays crisp on top
+        render_pos = js_content.find("renderGraphOnMap()")
+        route_pos = js_content.find("drawGlowingMintRoute(result.path_coordinates)")
+        assert render_pos != -1 and route_pos != -1
+        # In computeRoute(), renderGraphOnMap() is invoked prior to drawGlowingMintRoute()
+        compute_fn_match = re.search(r"async function computeRoute[\s\S]*?populateDirectionsList", js_content)
+        assert compute_fn_match is not None
+        compute_body = compute_fn_match.group(0)
+        assert compute_body.find("renderGraphOnMap()") < compute_body.find("drawGlowingMintRoute(result.path_coordinates)"), (
+            "computeRoute must call renderGraphOnMap() BEFORE drawGlowingMintRoute() so the route is cleanly drawn on top"
+        )
+
+        # 6. Step 0 is not automatically drawn on map when drawer is closed
+        assert "state.layers.stepExploration.clearLayers()" in compute_body
+        assert "state.layers.stepCurrentMarker.clearLayers()" in compute_body
+        assert "dsa-player-drawer" in compute_body
 
 

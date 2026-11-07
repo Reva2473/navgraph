@@ -7,14 +7,14 @@
 :root {
   color-scheme: dark;
 
-  /* Matte Dark Theme Palette */
-  --bg-sidebar: #141414;
-  --bg-sidebar-alt: #181818;
-  --bg-pill: #1c1c1c;
-  --bg-card: #191919;
-  --bg-card-hover: #222222;
-  --bg-modal: #181818;
-  --bg-glass-card: rgba(20, 20, 20, 0.96);
+  /* Graphite Dark Theme Palette */
+  --bg-sidebar: #0f0f10;
+  --bg-sidebar-alt: #141415;
+  --bg-pill: #19191b;
+  --bg-card: #19191b;
+  --bg-card-hover: #232325;
+  --bg-modal: #141415;
+  --bg-glass-card: rgba(20, 20, 21, 0.96);
 
   /* Primary Theme Accent (Warm Amber & Radiant Gold by default) */
   --accent-primary: #f59e0b;
@@ -43,15 +43,15 @@
   --accent-rose: #f43f5e;
 
   /* Typography Colors */
-  --text-white: #ffffff;
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-white: #ededed;
+  --text-primary: #ededed;
+  --text-secondary: #a1a1a6;
+  --text-muted: #85858b;
   --text-dark: #111111;
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-default: rgba(255, 255, 255, 0.14);
+  --border-subtle: rgba(237, 237, 237, 0.08);
+  --border-default: rgba(237, 237, 237, 0.12);
   --border-active: var(--accent-primary);
 
   /* Fonts */
@@ -84,7 +84,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #0d0d0d;
+  background-color: #0f0f10;
   color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -102,8 +102,8 @@ select,
 .preset-select,
 .algo-select {
   color-scheme: dark;
-  background-color: #1a1c23;
-  color: #f1f5f9;
+  background-color: #232325 !important;
+  color: #ededed !important;
 }
 
 select option,
@@ -112,8 +112,8 @@ select option,
 .pill-select option,
 .preset-select option,
 .algo-select option {
-  background-color: #1a1c23 !important;
-  color: #f1f5f9 !important;
+  background-color: #232325 !important;
+  color: #ededed !important;
   padding: 8px 12px;
 }
 
@@ -126,8 +126,8 @@ select option:focus,
 .form-select option:checked,
 .pill-select option:hover,
 .pill-select option:checked {
-  background-color: #2d3748 !important;
-  color: #ffffff !important;
+  background-color: #2d2d30 !important;
+  color: #ededed !important;
 }
 
 /* Custom Scrollbars */
@@ -207,7 +207,7 @@ select option:focus,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px 14px 20px;
+  padding: 16px 20px 12px 20px;
   flex-shrink: 0;
 }
 
@@ -223,7 +223,7 @@ select option:focus,
   justify-content: center;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-circle-icon:hover {
@@ -250,33 +250,32 @@ select option:focus,
   gap: 6px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  padding: 4px 8px;
-  height: 34px;
+  border-radius: 8px;
+  padding: 0 6px;
+  height: 28px;
 }
 
 .theme-dot {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
   background-color: var(--dot-color);
   cursor: pointer;
   padding: 0;
   margin: 0;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
   outline: none;
   position: relative;
 }
 
 .theme-dot:hover {
-  transform: scale(1.25);
+  transform: scale(1.15);
 }
 
 .theme-dot.active {
   border-color: #ffffff;
-  transform: scale(1.18);
-  box-shadow: 0 0 10px var(--dot-color);
+  transform: scale(1.1);
 }
 
 .sidebar-brand {
@@ -297,16 +296,11 @@ select option:focus,
   justify-content: center;
   font-size: 17px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease;
-}
-
-.brand-squircle:hover {
-  transform: rotate(-8deg) scale(1.05);
 }
 
 .brand-title {
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.4px;
   color: var(--text-white);
   display: flex;
@@ -315,19 +309,18 @@ select option:focus,
 }
 
 .brand-sub {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--accent-mint-light);
-  background: var(--accent-mint-subtle);
-  padding: 2px 6px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: transparent;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 /* 2. Search Bar Pill */
 .sidebar-search-container {
-  padding: 0 18px 12px 18px;
+  padding: 0 16px 12px 16px;
   flex-shrink: 0;
 }
 
@@ -341,7 +334,7 @@ select option:focus,
   display: flex;
   align-items: center;
   padding: 0 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .search-pill-wrapper:focus-within {
@@ -379,7 +372,7 @@ select option:focus,
   align-items: center;
   justify-content: center;
   font-size: 11px;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 2;
 }
 
@@ -405,7 +398,7 @@ select option:focus,
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  padding: 0 18px 12px 18px;
+  padding: 0 16px 12px 16px;
   flex-shrink: 0;
 }
 
@@ -435,11 +428,11 @@ select option:focus,
 .pill-select {
   width: 100%;
   height: 36px;
-  background-color: #1a1c23;
+  background-color: var(--bg-pill);
   border: 1px solid var(--border-default);
-  border-radius: 10px;
-  color: #f1f5f9;
-  font-size: 12.5px;
+  border-radius: 8px;
+  color: #ededed;
+  font-size: 12px;
   font-family: var(--font-sans);
   padding: 0 24px 0 10px;
   appearance: none;
@@ -449,13 +442,13 @@ select option:focus,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
 }
 
 .pill-select:hover, .pill-select:focus {
   border-color: var(--accent-primary);
-  background-color: #222530;
+  background-color: var(--bg-card-hover);
 }
 
 .pill-chevron {
@@ -472,21 +465,21 @@ select option:focus,
   height: 36px;
   background-color: var(--bg-sidebar-alt);
   border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--text-white);
-  font-size: 12.5px;
+  font-size: 12px;
   font-family: var(--font-sans);
   padding: 0 12px;
   display: flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
   white-space: nowrap;
 }
 
 .pill-btn-filter:hover {
-  background-color: #222222;
+  background-color: var(--bg-card-hover);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -495,7 +488,7 @@ select option:focus,
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 18px 12px 18px;
+  padding: 0 16px 12px 16px;
   flex-shrink: 0;
 }
 
@@ -509,6 +502,10 @@ select option:focus,
   white-space: nowrap;
 }
 
+.origin-label i {
+  color: var(--text-secondary);
+}
+
 .origin-select-wrapper {
   position: relative;
   flex: 1;
@@ -516,11 +513,11 @@ select option:focus,
 
 .origin-select {
   width: 100%;
-  height: 32px;
-  background-color: #1a1c23;
+  height: 36px;
+  background-color: var(--bg-pill);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  color: #f1f5f9;
+  color: #ededed;
   font-size: 12px;
   font-weight: 500;
   font-family: var(--font-sans);
@@ -529,13 +526,13 @@ select option:focus,
   -webkit-appearance: none;
   outline: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
 }
 
 .origin-select:hover {
   border-color: var(--border-default);
-  background-color: #222530;
+  background-color: var(--bg-card-hover);
 }
 
 .origin-select:focus {
@@ -562,9 +559,9 @@ select option:focus,
 
 .locations-count-badge {
   font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
 }
 
@@ -589,12 +586,12 @@ select option:focus,
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  border-radius: 16px;
-  border: 1.5px solid transparent;
+  border-radius: 12px !important;
+  border: 1px solid transparent;
   background-color: transparent;
   cursor: pointer;
   user-select: none;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
 }
 
@@ -604,10 +601,10 @@ select option:focus,
 
 /* Active / Selected Location Card */
 .location-row.selected {
-  border: 1.5px solid var(--accent-mint) !important;
-  border-radius: 18px !important;
-  background: linear-gradient(90deg, var(--accent-mint-subtle) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
-  box-shadow: 0 0 20px var(--accent-mint-subtle) !important;
+  background-color: #232325 !important;
+  border: 1px solid var(--accent-primary) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
 }
 
 .loc-avatar {
@@ -638,7 +635,8 @@ select option:focus,
 }
 
 .loc-sub {
-  font-size: 12.5px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -651,6 +649,7 @@ select option:focus,
 
 .loc-dist {
   color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .loc-bullet {
@@ -686,7 +685,7 @@ select option:focus,
 
 /* 6. Sidebar Footer */
 .sidebar-footer {
-  padding: 12px 18px;
+  padding: 12px 16px;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -698,7 +697,7 @@ select option:focus,
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -708,19 +707,17 @@ select option:focus,
   height: 7px;
   border-radius: 50%;
   background-color: var(--accent-mint);
-  box-shadow: 0 0 8px var(--accent-mint);
   display: inline-block;
 }
 
 .api-status-pill.offline .status-pulse-dot {
   background-color: var(--accent-rose);
-  box-shadow: 0 0 8px var(--accent-rose);
 }
 
 .footer-link {
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 11.5px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -762,7 +759,7 @@ select option:focus,
 /* 1. Map Top-Right Floating Pill Bar */
 .map-floating-bar {
   position: absolute;
-  top: 18px;
+  top: 16px;
   right: 20px;
   z-index: 900;
   display: flex;
@@ -774,23 +771,27 @@ select option:focus,
 }
 
 .map-pill-btn {
-  height: 38px;
+  height: 36px;
   background-color: rgba(20, 20, 20, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-pill);
+  border-radius: 8px;
   color: var(--text-white);
   font-size: 13px;
   font-weight: 500;
   font-family: var(--font-sans);
-  padding: 0 16px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   gap: 7px;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.map-pill-btn i {
+  color: var(--text-secondary);
 }
 
 .map-pill-btn:hover {
@@ -800,7 +801,7 @@ select option:focus,
 }
 
 .map-pill-btn.btn-icon-only {
-  width: 38px;
+  width: 36px;
   padding: 0;
   justify-content: center;
 }
@@ -808,6 +809,10 @@ select option:focus,
 .map-pill-btn.highlight-mint {
   border-color: var(--accent-mint);
   color: var(--accent-mint-light);
+}
+
+.map-pill-btn.highlight-mint i {
+  color: inherit;
 }
 
 .map-pill-btn.highlight-mint:hover {
@@ -818,6 +823,10 @@ select option:focus,
 .map-pill-btn.active {
   border-color: rgba(255, 255, 255, 0.4);
   background-color: rgba(45, 45, 45, 0.95);
+}
+
+.map-pill-btn.active i {
+  color: inherit;
 }
 
 /* ===================================================================
@@ -834,8 +843,8 @@ select option:focus,
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-default);
-  border-radius: 22px;
-  padding: 22px;
+  border-radius: 20px;
+  padding: 20px;
   box-shadow: var(--shadow-floating);
   z-index: 950;
   transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -858,7 +867,7 @@ select option:focus,
   justify-content: center;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card-close-btn:hover {
@@ -895,7 +904,7 @@ select option:focus,
 
 .card-node-title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-white);
   letter-spacing: -0.3px;
   white-space: nowrap;
@@ -925,13 +934,14 @@ select option:focus,
   padding: 9px 14px;
   margin: 16px 0;
   background: rgba(255, 255, 255, 0.03);
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-pill-item {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-white);
 }
@@ -955,7 +965,7 @@ select option:focus,
   display: flex;
   gap: 8px;
   align-items: flex-start;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .bullet-dot {
@@ -968,7 +978,7 @@ select option:focus,
 }
 
 .card-bullet-text p {
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--text-secondary);
   line-height: 1.45;
 }
@@ -987,12 +997,12 @@ select option:focus,
   background: transparent;
   border: 1px solid var(--border-default);
   color: var(--text-white);
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   font-family: var(--font-sans);
   cursor: pointer;
   text-align: center;
-  transition: all 0.2s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-pill-outline:hover {
@@ -1050,9 +1060,9 @@ select option:focus,
 
 .outlet-marker-wrapper:hover .outlet-marker-circle,
 .marker-hover-active .outlet-marker-circle {
-  transform: scale(1.16) !important;
+  transform: scale(1.06) !important;
   border-color: var(--accent-mint) !important;
-  box-shadow: 0 0 24px var(--accent-mint-glow), 0 10px 24px rgba(0, 0, 0, 0.75) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75) !important;
 }
 
 .marker-hover-active {
@@ -1070,7 +1080,7 @@ select option:focus,
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65);
   border: 2px solid rgba(255, 255, 255, 0.18);
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .outlet-marker-wrapper.active .outlet-marker-circle {
@@ -1088,12 +1098,13 @@ select option:focus,
   font-size: 11px;
   font-weight: 600;
   font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
   gap: 4px;
   white-space: nowrap;
   pointer-events: none;
-  transition: all 0.2s ease;
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1), opacity 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .marker-hover-active .outlet-marker-pill {
@@ -1113,7 +1124,7 @@ select option:focus,
 .outlet-marker-pill.active-pill {
   background-color: #ffffff;
   color: #111111;
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
 }
 
@@ -1128,7 +1139,7 @@ select option:focus,
   border-radius: var(--radius-pill);
   padding: 10px 20px;
   color: var(--text-white);
-  font-size: 13.5px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1190,19 +1201,19 @@ select option:focus,
 }
 
 .node-hover-title {
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.01em;
 }
 
 .tt-role {
   font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  letter-spacing: 0;
   padding: 2px 6px;
   border-radius: 6px;
-  text-transform: uppercase;
+  text-transform: none;
   flex-shrink: 0;
 }
 
@@ -1235,10 +1246,11 @@ select option:focus,
 
 .node-hover-coords {
   opacity: 0.85;
+  font-variant-numeric: tabular-nums;
 }
 
 .node-hover-desc {
-  font-size: 11.5px;
+  font-size: 11px;
   line-height: 1.4;
   color: #cbd5e1;
   padding-top: 4px;
@@ -1256,12 +1268,12 @@ select option:focus,
 
 .edge-hover-title {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: #ffffff;
 }
 
 .edge-hover-sub {
-  font-size: 11.5px;
+  font-size: 11px;
   color: #94a3b8;
 }
 
@@ -1296,7 +1308,7 @@ select option:focus,
 }
 
 .drawer-header {
-  padding: 18px 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -1310,14 +1322,18 @@ select option:focus,
   gap: 12px;
 }
 
+.drawer-title-group i {
+  color: var(--text-secondary);
+}
+
 .drawer-title {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-white);
 }
 
 .drawer-subtitle {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-secondary);
 }
 
@@ -1345,12 +1361,16 @@ select option:focus,
 }
 
 .card-inner-title {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-white);
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.card-inner-title i {
+  color: var(--text-secondary);
 }
 
 .section-hint {
@@ -1363,7 +1383,7 @@ select option:focus,
 /* Playback Control Card */
 .player-ctrl-card {
   border-color: var(--border-default);
-  background: linear-gradient(180deg, var(--accent-mint-subtle) 0%, rgba(25, 25, 25, 1) 100%);
+  background-color: #19191b;
 }
 
 .player-header-row {
@@ -1378,6 +1398,7 @@ select option:focus,
   font-size: 13px;
   font-weight: 600;
   color: var(--text-white);
+  font-variant-numeric: tabular-nums;
 }
 
 .player-badge-strip {
@@ -1388,9 +1409,10 @@ select option:focus,
 .badge {
   padding: 3px 8px;
   border-radius: 6px;
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .badge-muted { background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); }
@@ -1409,7 +1431,7 @@ select option:focus,
 }
 
 .step-narration-text {
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--text-primary);
   line-height: 1.45;
 }
@@ -1433,7 +1455,7 @@ select option:focus,
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-player:hover {
@@ -1447,7 +1469,6 @@ select option:focus,
   background: var(--accent-mint);
   color: #0f172a;
   border: none;
-  box-shadow: 0 0 16px var(--accent-mint-glow);
 }
 
 .btn-player-main:hover {
@@ -1459,7 +1480,7 @@ select option:focus,
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-secondary);
   margin-bottom: 10px;
 }
@@ -1541,13 +1562,17 @@ select option:focus,
 .mini-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11.5px;
+  font-size: 11px;
 }
 
 .mini-table th, .mini-table td {
   padding: 6px 8px;
   text-align: left;
   border-bottom: 1px solid var(--border-subtle);
+}
+
+.mini-table td {
+  font-variant-numeric: tabular-nums;
 }
 
 .mini-table th {
@@ -1575,14 +1600,14 @@ select option:focus,
 }
 
 .step-number-badge {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: var(--accent-mint-subtle);
   color: var(--accent-mint-light);
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1590,13 +1615,13 @@ select option:focus,
 }
 
 .direction-instruction {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-white);
 }
 
 .direction-meta {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-muted);
   display: flex;
   gap: 8px;
@@ -1634,13 +1659,15 @@ select option:focus,
   display: block;
   font-size: 10px;
   color: var(--text-muted);
-  text-transform: uppercase;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .complexity-pill code {
   font-size: 11px;
   color: var(--accent-mint-light);
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===================================================================
@@ -1664,7 +1691,7 @@ select option:focus,
   border: 1px solid var(--border-subtle);
   background: rgba(255, 255, 255, 0.03);
   text-align: center;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .toggle-option.active .toggle-box {
@@ -1706,19 +1733,19 @@ select option:focus,
 }
 
 .form-label {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-secondary);
 }
 
 .form-input, .form-select {
   width: 100%;
   height: 36px;
-  background-color: #1a1c23;
+  background-color: var(--bg-pill);
   border: 1px solid var(--border-default);
   border-radius: 8px;
-  color: #f1f5f9;
+  color: #ededed;
   padding: 0 10px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-family: var(--font-sans);
   outline: none;
   color-scheme: dark;
@@ -1778,8 +1805,8 @@ select option:focus,
 /* Common Buttons */
 .btn {
   padding: 8px 14px;
-  border-radius: 10px;
-  font-size: 12.5px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 600;
   font-family: var(--font-sans);
   cursor: pointer;
@@ -1788,7 +1815,7 @@ select option:focus,
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.15s ease;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), opacity 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-sm { height: 36px; padding: 0 12px; }
@@ -1892,9 +1919,19 @@ select option:focus,
   justify-content: space-between;
 }
 
+.modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-title-group i {
+  color: var(--text-secondary);
+}
+
 .modal-title {
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-white);
 }
 
@@ -1923,7 +1960,7 @@ select option:focus,
   border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 12px;
   padding: 14px 16px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .insight-header {
@@ -1931,13 +1968,13 @@ select option:focus,
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--accent-amber);
   margin-bottom: 6px;
 }
 
 .insight-text {
-  font-size: 12.5px;
+  font-size: 12px;
   color: #e5e7eb;
   line-height: 1.5;
 }
@@ -1950,7 +1987,7 @@ select option:focus,
 .comparison-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
 .comparison-table th, .comparison-table td {
@@ -1959,10 +1996,15 @@ select option:focus,
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.comparison-table td {
+  font-variant-numeric: tabular-nums;
+}
+
 .comparison-table th {
   color: var(--text-muted);
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
+  letter-spacing: 0;
   font-size: 11px;
 }
 
@@ -2019,6 +2061,7 @@ select option:focus,
   display: flex;
   justify-content: space-between;
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
   padding: 6px 0;
   border-bottom: 1px solid var(--border-subtle);
 }

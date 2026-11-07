@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=20261107_v3">
+  <link rel="stylesheet" href="css/style.css?v=20261107_unslop1">
 </head>
 <body class="outlet-app-body">
   <!-- ================= MAIN APP WRAPPER ================= -->
@@ -51,7 +51,7 @@
       <!-- Search Bar Pill -->
       <div class="sidebar-search-container">
         <div class="search-pill-wrapper">
-          <input type="text" id="search-locations-input" class="search-pill-input" placeholder="Search locations..." autocomplete="off" spellcheck="false">
+          <input type="text" id="search-locations-input" class="search-pill-input" placeholder="Search locations" autocomplete="off" spellcheck="false">
           <button id="btn-clear-search" class="search-clear-btn hidden" type="button" title="Clear search">
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -62,7 +62,7 @@
       <!-- Control / Filter Row ("Preset:" / "Algorithm:" / "Tools") -->
       <div class="sidebar-filter-row">
         <div class="filter-col">
-          <label class="filter-label" for="preset-select">Show me:</label>
+          <label class="filter-label" for="preset-select">Dataset</label>
           <div class="pill-select-wrapper">
             <select id="preset-select" class="pill-select" aria-label="Select Map Preset">
               <option value="campus_navigator" selected>NSUT Dwarka Campus</option>
@@ -73,7 +73,7 @@
         </div>
 
         <div class="filter-col">
-          <label class="filter-label" for="algo-select">Algorithm:</label>
+          <label class="filter-label" for="algo-select">Algorithm</label>
           <div class="pill-select-wrapper">
             <select id="algo-select" class="pill-select" aria-label="Select Routing Algorithm">
               <option value="dijkstra" selected>Dijkstra</option>
@@ -86,7 +86,6 @@
         </div>
 
         <div class="filter-col filter-btn-col">
-          <label class="filter-label">&nbsp;</label>
           <button id="btn-open-tools-drawer" class="pill-btn-filter" title="Open DSA Lab &amp; Graph Topology Tools">
             <i class="fa-solid fa-sliders"></i> Filters
           </button>
@@ -95,7 +94,7 @@
 
       <!-- Origin Selector Bar -->
       <div class="sidebar-origin-bar">
-        <span class="origin-label"><i class="fa-solid fa-diamond-turn-right text-mint"></i> Route from:</span>
+        <span class="origin-label"><i class="fa-solid fa-diamond-turn-right"></i> Route from</span>
         <div class="origin-select-wrapper">
           <select id="select-origin-node" class="origin-select" aria-label="Select Starting Origin Vertex"></select>
           <i class="fa-solid fa-chevron-down pill-chevron"></i>
@@ -139,10 +138,10 @@
           <i class="fa-solid fa-play"></i> DSA Step Player
         </button>
         <button id="btn-floating-compare" class="map-pill-btn" title="Benchmark Dijkstra, A*, BFS, and DFS">
-          <i class="fa-solid fa-chart-column text-cyan"></i> Compare 4 Algos
+          <i class="fa-solid fa-chart-column"></i> Compare 4 Algos
         </button>
         <button id="btn-floating-traffic" class="map-pill-btn" title="Simulate dynamic road congestion and closures">
-          <i class="fa-solid fa-bolt text-amber"></i> Simulate Traffic
+          <i class="fa-solid fa-bolt"></i> Simulate Traffic
         </button>
         <button id="btn-floating-reset-traffic" class="map-pill-btn" title="Reset traffic multipliers to normal (1.0x)">
           <i class="fa-solid fa-rotate-left"></i> Reset
@@ -202,7 +201,7 @@
         <div class="card-bullet-text">
           <div class="bullet-dot"></div>
           <p id="detail-card-desc">
-            Direct high-speed corridor connecting Origin to Destination. Min-Heap Priority Queue guarantees minimum cumulative edge weight.
+            Shortest path computed across weighted graph edges.
           </p>
         </div>
 
@@ -236,7 +235,7 @@
     <aside class="dsa-player-drawer" id="dsa-player-drawer">
       <div class="drawer-header">
         <div class="drawer-title-group">
-          <i class="fa-solid fa-microchip text-mint"></i>
+          <i class="fa-solid fa-microchip"></i>
           <div>
             <h3 class="drawer-title">DSA Traversal Inspector</h3>
             <span id="player-algo-badge" class="drawer-subtitle font-mono">Dijkstra's Min-Heap Exploration</span>
@@ -299,7 +298,7 @@
         <div class="drawer-card">
           <div class="card-inner-header">
             <span class="card-inner-title">
-              <i class="fa-solid fa-cubes-stacked text-cyan"></i> Min-Heap Priority Queue / Frontier
+              <i class="fa-solid fa-cubes-stacked"></i> Min-Heap Priority Queue / Frontier
             </span>
             <span id="frontier-count-badge" class="badge badge-muted font-mono">0 items</span>
           </div>
@@ -313,7 +312,7 @@
         <div class="drawer-card">
           <div class="card-inner-header">
             <span class="card-inner-title">
-              <i class="fa-solid fa-circle-check text-mint"></i> Visited Set (Closed List)
+              <i class="fa-solid fa-circle-check"></i> Visited Set (Closed List)
             </span>
             <span id="visited-count-badge" class="badge badge-muted font-mono">0 visited</span>
           </div>
@@ -326,7 +325,7 @@
         <div class="drawer-card">
           <div class="card-inner-header">
             <span class="card-inner-title">
-              <i class="fa-solid fa-table-list text-amber"></i> Tentative Distances (Relaxation)
+              <i class="fa-solid fa-table-list"></i> Tentative Distances (Relaxation)
             </span>
           </div>
           <div id="distances-table-container" class="distances-table-wrapper">
@@ -338,7 +337,7 @@
         <div class="drawer-card">
           <div class="card-inner-header">
             <span class="card-inner-title">
-              <i class="fa-solid fa-signs-post text-cyan"></i> Turn-by-Turn Leg Navigation
+              <i class="fa-solid fa-signs-post"></i> Turn-by-Turn Leg Navigation
             </span>
             <span id="directions-count" class="badge badge-muted font-mono">0 legs</span>
           </div>
@@ -369,7 +368,7 @@
     <aside class="tools-drawer" id="tools-drawer">
       <div class="drawer-header">
         <div class="drawer-title-group">
-          <i class="fa-solid fa-sliders text-mint"></i>
+          <i class="fa-solid fa-sliders"></i>
           <div>
             <h3 class="drawer-title">DSA Lab &amp; Graph Topology</h3>
             <span class="drawer-subtitle font-mono">Configure Metric, Waypoints &amp; Modify Vertices</span>
@@ -384,7 +383,7 @@
         <!-- Cost Metric Toggle -->
         <div class="drawer-card">
           <div class="card-inner-header">
-            <span class="card-inner-title"><i class="fa-solid fa-weight-hanging text-amber"></i> Cost Metric Weight</span>
+            <span class="card-inner-title"><i class="fa-solid fa-weight-hanging"></i> Cost Metric Weight</span>
           </div>
           <div class="weight-mode-toggle">
             <label class="toggle-option active" data-weight="effective">
@@ -409,7 +408,7 @@
         <!-- Waypoints Manager -->
         <div class="drawer-card">
           <div class="card-inner-header">
-            <span class="card-inner-title"><i class="fa-solid fa-map-pin text-cyan"></i> Intermediate Waypoints</span>
+            <span class="card-inner-title"><i class="fa-solid fa-map-pin"></i> Intermediate Waypoints</span>
             <button id="btn-add-waypoint" class="btn-subtle-xs"><i class="fa-solid fa-plus"></i> Add Stop</button>
           </div>
           <div id="waypoints-container" class="waypoints-list">
@@ -420,7 +419,7 @@
         <!-- Add Graph Node Form -->
         <div class="drawer-card">
           <div class="card-inner-header">
-            <span class="card-inner-title"><i class="fa-solid fa-circle-plus text-mint"></i> Add New Vertex (Node)</span>
+            <span class="card-inner-title"><i class="fa-solid fa-circle-plus"></i> Add New Vertex (Node)</span>
           </div>
           <p class="section-hint">Click "Pick GPS" to capture coordinates directly from the map.</p>
           <form id="form-add-node" class="editor-form">
@@ -456,7 +455,7 @@
             </div>
             <div class="form-group">
               <label for="new-node-desc" class="form-label">Description (Optional)</label>
-              <input type="text" id="new-node-desc" class="form-input" placeholder="Vertex description...">
+              <input type="text" id="new-node-desc" class="form-input" placeholder="Optional description">
             </div>
             <button type="submit" class="btn btn-mint btn-sm btn-block">
               <i class="fa-solid fa-plus"></i> Add Node to Graph
@@ -467,7 +466,7 @@
         <!-- Add Graph Edge Form -->
         <div class="drawer-card">
           <div class="card-inner-header">
-            <span class="card-inner-title"><i class="fa-solid fa-road text-cyan"></i> Connect Vertices (Edge / Road)</span>
+            <span class="card-inner-title"><i class="fa-solid fa-road"></i> Connect Vertices (Edge / Road)</span>
           </div>
           <form id="form-add-edge" class="editor-form">
             <div class="form-row">
@@ -516,7 +515,7 @@
         <!-- Factory Reset Card -->
         <div class="drawer-card">
           <div class="card-inner-header">
-            <span class="card-inner-title"><i class="fa-solid fa-database text-rose"></i> Reset Active Preset</span>
+            <span class="card-inner-title"><i class="fa-solid fa-database"></i> Reset Active Preset</span>
           </div>
           <p class="section-hint">Discard modifications and reload factory verified topology.</p>
           <button id="btn-reload-preset" class="btn btn-outline-danger btn-sm btn-block">
@@ -535,7 +534,7 @@
     <div class="modal-box modal-xl">
       <div class="modal-header">
         <div class="modal-title-group">
-          <i class="fa-solid fa-chart-line text-mint"></i>
+          <i class="fa-solid fa-chart-line"></i>
           <div>
             <h3 class="modal-title">Graph Algorithm Benchmark &amp; Analysis</h3>
             <span class="modal-subtitle">Dijkstra vs A* (Haversine) vs BFS vs DFS on identical topology</span>
@@ -547,7 +546,7 @@
         <!-- Automated DSA Insight Card -->
         <div class="dsa-insight-card" id="comparison-analysis-card">
           <div class="insight-header">
-            <i class="fa-solid fa-lightbulb text-amber"></i>
+            <i class="fa-solid fa-lightbulb"></i>
             <span class="insight-title">Automated DSA Algorithmic Analysis</span>
           </div>
           <p id="comparison-analysis-text" class="insight-text">
@@ -589,7 +588,7 @@
     <div class="modal-box modal-lg">
       <div class="modal-header">
         <div class="modal-title-group">
-          <i class="fa-solid fa-network-wired text-cyan"></i>
+          <i class="fa-solid fa-network-wired"></i>
           <div>
             <h3 class="modal-title">Graph Structure &amp; Adjacency Representation</h3>
             <span class="modal-subtitle">Direct serialized graph model returned from Backend API (Exp 14)</span>
@@ -622,7 +621,7 @@
     <div class="modal-box modal-sm">
       <div class="modal-header">
         <div class="modal-title-group">
-          <i class="fa-solid fa-car-burst text-amber"></i>
+          <i class="fa-solid fa-car-burst"></i>
           <div>
             <h3 class="modal-title" id="edge-modal-title">Road Traffic Inspector</h3>
             <span class="modal-subtitle" id="edge-modal-corridor">Corridor</span>
@@ -738,6 +737,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
   <!-- Application Logic -->
-  <script src="js/app.js?v=20261107_v3"></script>
+  <script src="js/app.js?v=20261107_unslop1"></script>
 </body>
 </html>

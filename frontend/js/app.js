@@ -38,59 +38,59 @@
   // =========================================================================
   const NODE_STYLE_REGISTRY = {
     // Campus Navigator Landmarks
-    main_gate: { icon: 'fa-location-arrow', color: '#ffffff', textColor: '#111111', pillText: '☺ 100' },
-    security_hub: { icon: 'fa-shield-halved', color: '#fecdd3', textColor: '#111111', pillText: '☺ 95' },
-    admin_block: { icon: 'fa-building-columns', color: '#ddd6fe', textColor: '#111111', pillText: '☺ 90' },
-    central_library: { icon: 'fa-book-bookmark', color: '#bae6fd', textColor: '#111111', pillText: '☺ 98' },
-    cs_dept: { icon: 'fa-laptop-code', color: '#93c5fd', textColor: '#111111', pillText: '☺ 100' },
-    ece_dept: { icon: 'fa-microchip', color: '#f6d06b', textColor: '#111111', pillText: '☺ 92' },
-    innovation_hub: { icon: 'fa-lightbulb', color: '#f9c8e0', textColor: '#111111', pillText: '☺ 96' },
-    auditorium: { icon: 'fa-masks-theater', color: '#fed7aa', textColor: '#111111', pillText: '☺ 88' },
-    cafeteria: { icon: 'fa-utensils', color: '#fde047', textColor: '#111111', pillText: '☺ 85' },
-    hostel_north: { icon: 'fa-bed', color: '#cbd5e1', textColor: '#111111', pillText: '☺ 80' },
-    hostel_south: { icon: 'fa-hotel', color: '#e2e8f0', textColor: '#111111', pillText: '☺ 80' },
-    sports_arena: { icon: 'fa-futbol', color: '#a5b4fc', textColor: '#111111', pillText: '☺ 94' },
-    medical_center: { icon: 'fa-heart-pulse', color: '#fca5a5', textColor: '#111111', pillText: '☺ 99' },
-    metro_gate: { icon: 'fa-train-subway', color: '#ffffff', textColor: '#111111', pillText: '☺ 100' },
+    main_gate: { icon: 'fa-location-arrow', color: '#ffffff', textColor: '#111111', pillText: 'Gate' },
+    security_hub: { icon: 'fa-shield-halved', color: '#fecdd3', textColor: '#111111', pillText: 'Security' },
+    admin_block: { icon: 'fa-building-columns', color: '#ddd6fe', textColor: '#111111', pillText: 'Admin' },
+    central_library: { icon: 'fa-book-bookmark', color: '#bae6fd', textColor: '#111111', pillText: 'Library' },
+    cs_dept: { icon: 'fa-laptop-code', color: '#93c5fd', textColor: '#111111', pillText: 'CSE' },
+    ece_dept: { icon: 'fa-microchip', color: '#f6d06b', textColor: '#111111', pillText: 'ECE' },
+    innovation_hub: { icon: 'fa-lightbulb', color: '#f9c8e0', textColor: '#111111', pillText: 'TNP' },
+    auditorium: { icon: 'fa-masks-theater', color: '#fed7aa', textColor: '#111111', pillText: 'Auditorium' },
+    cafeteria: { icon: 'fa-utensils', color: '#fde047', textColor: '#111111', pillText: 'Dining' },
+    hostel_north: { icon: 'fa-bed', color: '#cbd5e1', textColor: '#111111', pillText: 'Hostel N' },
+    hostel_south: { icon: 'fa-hotel', color: '#e2e8f0', textColor: '#111111', pillText: 'Hostel S' },
+    sports_arena: { icon: 'fa-futbol', color: '#a5b4fc', textColor: '#111111', pillText: 'Sports' },
+    medical_center: { icon: 'fa-heart-pulse', color: '#fca5a5', textColor: '#111111', pillText: 'Medical' },
+    metro_gate: { icon: 'fa-train-subway', color: '#ffffff', textColor: '#111111', pillText: 'Metro' },
 
     // India Highways Cities
-    delhi: { icon: 'fa-landmark-dome', color: '#ffffff', textColor: '#111111', pillText: '☺ 100' },
-    chandigarh: { icon: 'fa-tree', color: '#93c5fd', textColor: '#111111', pillText: '☺ 90' },
-    jaipur: { icon: 'fa-fort-awesome', color: '#f9c8e0', textColor: '#111111', pillText: '☺ 92' },
-    lucknow: { icon: 'fa-feather', color: '#fed7aa', textColor: '#111111', pillText: '☺ 88' },
-    ahmedabad: { icon: 'fa-industry', color: '#fde047', textColor: '#111111', pillText: '☺ 85' },
-    bhopal: { icon: 'fa-crosshairs', color: '#e2e8f0', textColor: '#111111', pillText: '☺ 82' },
-    patna: { icon: 'fa-water', color: '#bae6fd', textColor: '#111111', pillText: '☺ 80' },
-    guwahati: { icon: 'fa-mountain', color: '#a5b4fc', textColor: '#111111', pillText: '☺ 85' },
-    kolkata: { icon: 'fa-bridge-water', color: '#fed7aa', textColor: '#111111', pillText: '☺ 94' },
-    mumbai: { icon: 'fa-building', color: '#bae6fd', textColor: '#111111', pillText: '☺ 98' },
-    pune: { icon: 'fa-graduation-cap', color: '#fecdd3', textColor: '#111111', pillText: '☺ 90' },
-    nagpur: { icon: 'fa-bullseye', color: '#ddd6fe', textColor: '#111111', pillText: '☺ 88' },
-    bhubaneswar: { icon: 'fa-place-of-worship', color: '#f6d06b', textColor: '#111111', pillText: '☺ 84' },
-    hyderabad: { icon: 'fa-gem', color: '#ddd6fe', textColor: '#111111', pillText: '☺ 96' },
-    visakhapatnam: { icon: 'fa-ship', color: '#bae6fd', textColor: '#111111', pillText: '☺ 86' },
-    bengaluru: { icon: 'fa-microchip', color: '#93c5fd', textColor: '#111111', pillText: '☺ 100' },
-    chennai: { icon: 'fa-anchor', color: '#fde68a', textColor: '#111111', pillText: '☺ 95' },
-    kochi: { icon: 'fa-compass', color: '#86efac', textColor: '#111111', pillText: '☺ 91' }
+    delhi: { icon: 'fa-landmark-dome', color: '#ffffff', textColor: '#111111', pillText: 'DL · Hub' },
+    chandigarh: { icon: 'fa-tree', color: '#93c5fd', textColor: '#111111', pillText: 'CH' },
+    jaipur: { icon: 'fa-fort-awesome', color: '#f9c8e0', textColor: '#111111', pillText: 'RJ' },
+    lucknow: { icon: 'fa-feather', color: '#fed7aa', textColor: '#111111', pillText: 'UP' },
+    ahmedabad: { icon: 'fa-industry', color: '#fde047', textColor: '#111111', pillText: 'GJ' },
+    bhopal: { icon: 'fa-crosshairs', color: '#e2e8f0', textColor: '#111111', pillText: 'MP' },
+    patna: { icon: 'fa-water', color: '#bae6fd', textColor: '#111111', pillText: 'BR' },
+    guwahati: { icon: 'fa-mountain', color: '#a5b4fc', textColor: '#111111', pillText: 'AS' },
+    kolkata: { icon: 'fa-bridge-water', color: '#fed7aa', textColor: '#111111', pillText: 'WB' },
+    mumbai: { icon: 'fa-building', color: '#bae6fd', textColor: '#111111', pillText: 'MH · West' },
+    pune: { icon: 'fa-graduation-cap', color: '#fecdd3', textColor: '#111111', pillText: 'MH' },
+    nagpur: { icon: 'fa-bullseye', color: '#ddd6fe', textColor: '#111111', pillText: 'MH · Core' },
+    bhubaneswar: { icon: 'fa-place-of-worship', color: '#f6d06b', textColor: '#111111', pillText: 'OD' },
+    hyderabad: { icon: 'fa-gem', color: '#ddd6fe', textColor: '#111111', pillText: 'TG' },
+    visakhapatnam: { icon: 'fa-ship', color: '#bae6fd', textColor: '#111111', pillText: 'AP · Port' },
+    bengaluru: { icon: 'fa-microchip', color: '#93c5fd', textColor: '#111111', pillText: 'KA · South' },
+    chennai: { icon: 'fa-anchor', color: '#fde68a', textColor: '#111111', pillText: 'TN · Port' },
+    kochi: { icon: 'fa-compass', color: '#86efac', textColor: '#111111', pillText: 'KL' }
   };
 
   const CATEGORY_STYLE_FALLBACKS = {
-    gate: { icon: 'fa-door-open', color: '#ffffff', textColor: '#111111', pillText: '☺ 90' },
-    admin: { icon: 'fa-building-columns', color: '#ddd6fe', textColor: '#111111', pillText: '☺ 88' },
-    academic: { icon: 'fa-book-bookmark', color: '#bae6fd', textColor: '#111111', pillText: '☺ 92' },
-    research: { icon: 'fa-lightbulb', color: '#f9c8e0', textColor: '#111111', pillText: '☺ 94' },
-    cultural: { icon: 'fa-masks-theater', color: '#fed7aa', textColor: '#111111', pillText: '☺ 85' },
-    amenity: { icon: 'fa-utensils', color: '#fde047', textColor: '#111111', pillText: '☺ 82' },
-    residence: { icon: 'fa-bed', color: '#cbd5e1', textColor: '#111111', pillText: '☺ 80' },
-    sports: { icon: 'fa-futbol', color: '#86efac', textColor: '#111111', pillText: '☺ 91' },
-    health: { icon: 'fa-heart-pulse', color: '#fca5a5', textColor: '#111111', pillText: '☺ 98' },
-    metro: { icon: 'fa-city', color: '#bae6fd', textColor: '#111111', pillText: '☺ 95' },
-    hub: { icon: 'fa-arrows-split-up-and-left', color: '#ddd6fe', textColor: '#111111', pillText: '☺ 87' },
-    capital: { icon: 'fa-landmark', color: '#fed7aa', textColor: '#111111', pillText: '☺ 89' }
+    gate: { icon: 'fa-door-open', color: '#ffffff', textColor: '#111111', pillText: 'Gate' },
+    admin: { icon: 'fa-building-columns', color: '#ddd6fe', textColor: '#111111', pillText: 'Admin' },
+    academic: { icon: 'fa-book-bookmark', color: '#bae6fd', textColor: '#111111', pillText: 'Academic' },
+    research: { icon: 'fa-lightbulb', color: '#f9c8e0', textColor: '#111111', pillText: 'Research' },
+    cultural: { icon: 'fa-masks-theater', color: '#fed7aa', textColor: '#111111', pillText: 'Cultural' },
+    amenity: { icon: 'fa-utensils', color: '#fde047', textColor: '#111111', pillText: 'Dining' },
+    residence: { icon: 'fa-bed', color: '#cbd5e1', textColor: '#111111', pillText: 'Hostel' },
+    sports: { icon: 'fa-futbol', color: '#86efac', textColor: '#111111', pillText: 'Sports' },
+    health: { icon: 'fa-heart-pulse', color: '#fca5a5', textColor: '#111111', pillText: 'Medical' },
+    metro: { icon: 'fa-city', color: '#bae6fd', textColor: '#111111', pillText: 'Metro' },
+    hub: { icon: 'fa-arrows-split-up-and-left', color: '#ddd6fe', textColor: '#111111', pillText: 'Hub' },
+    capital: { icon: 'fa-landmark', color: '#fed7aa', textColor: '#111111', pillText: 'Capital' }
   };
 
   function getNodeStyle(node) {
-    if (!node) return { icon: 'fa-location-dot', color: '#ffffff', textColor: '#111111', pillText: '☺ 80' };
+    if (!node) return { icon: 'fa-location-dot', color: '#ffffff', textColor: '#111111', pillText: 'Vertex' };
     if (NODE_STYLE_REGISTRY[node.id]) {
       return NODE_STYLE_REGISTRY[node.id];
     }
@@ -98,7 +98,7 @@
     if (CATEGORY_STYLE_FALLBACKS[cat]) {
       return CATEGORY_STYLE_FALLBACKS[cat];
     }
-    return { icon: 'fa-location-dot', color: '#ffffff', textColor: '#111111', pillText: '☺ 85' };
+    return { icon: 'fa-location-dot', color: '#ffffff', textColor: '#111111', pillText: 'Vertex' };
   }
 
   // =========================================================================
@@ -675,7 +675,7 @@
               <i class="fa-solid ${style.icon}"></i>
             </div>
             <div class="outlet-marker-pill ${isActive ? 'active-pill' : 'inactive-pill'}">
-              <i class="fa-regular fa-face-smile"></i> ${escapeHtml(shortLabel)}
+              ${escapeHtml(shortLabel)}
             </div>
           </div>
         `,
@@ -691,7 +691,9 @@
       });
 
       // Rich hover popup above every marker on the map
-      const roleTag = isOrigin ? '<span class="tt-role origin">ORIGIN</span>' : (isTarget ? '<span class="tt-role dest">DESTINATION</span>' : '');
+      const roleTag = isOrigin ? '<span class="tt-role origin">Origin</span>' : (isTarget ? '<span class="tt-role dest">Destination</span>' : '');
+      const rawCat = (node.category || 'node');
+      const catFormatted = rawCat.charAt(0).toUpperCase() + rawCat.slice(1).toLowerCase();
       const tooltipHtml = `
         <div class="node-hover-popup">
           <div class="node-hover-header">
@@ -699,7 +701,7 @@
             ${roleTag}
           </div>
           <div class="node-hover-meta">
-            <span class="node-hover-cat">${escapeHtml((node.category || 'node').toUpperCase())}</span>
+            <span class="node-hover-cat">${escapeHtml(catFormatted)}</span>
             <span class="node-hover-coords">${node.lat.toFixed(4)}°N, ${node.lng.toFixed(4)}°E</span>
           </div>
           ${node.description ? `<div class="node-hover-desc">${escapeHtml(node.description)}</div>` : ''}
@@ -774,27 +776,34 @@
       const style = getNodeStyle(node);
 
       // Distance estimation or optimal route info
-      let distText = '0.5';
-      let statusText = 'Optimal • ~5 min';
-      let isOptimal = true;
+      const origNode = state.nodeMap.get(state.selectedSource);
+      let distText = '--';
+      let estMin = 3;
+      if (origNode) {
+        const direct = haversineDistanceKm(origNode.lat, origNode.lng, node.lat, node.lng);
+        distText = direct < 1 ? direct.toFixed(2) : direct.toFixed(1);
+        estMin = Math.round(direct * 2.5) || 1;
+      }
+
+      let statusText = '~' + estMin + ' min est.';
+      let isOptimal = false;
 
       if (isOrigin) {
         distText = '0.0';
-        statusText = 'Origin Starting Point';
+        statusText = 'Origin point';
         isOptimal = false;
       } else if (isSelected && state.routeResult) {
-        distText = `${state.routeResult.total_distance_km}`;
-        statusText = `Optimal • ~${Math.round(state.routeResult.estimated_time_min)} min`;
+        distText = String(state.routeResult.total_distance_km);
+        statusText = 'Selected · ~' + Math.round(state.routeResult.estimated_time_min) + ' min';
+        isOptimal = true;
       } else {
-        // Calculate straight-line rough km if origin exists
-        const origNode = state.nodeMap.get(state.selectedSource);
-        if (origNode) {
-          const direct = haversineDistanceKm(origNode.lat, origNode.lng, node.lat, node.lng);
-          distText = direct < 1 ? direct.toFixed(2) : direct.toFixed(1);
-          const estMin = Math.round(direct * 2.5) || 3;
-          statusText = `Nearby • ~${estMin} min`;
-        }
+        statusText = '~' + estMin + ' min est.';
+        isOptimal = false;
       }
+
+      const degree = Array.isArray(state.graph.adjacency_list?.[node.id])
+        ? state.graph.adjacency_list[node.id].length
+        : (state.graph.edges || []).filter(e => e.source === node.id || e.target === node.id).length;
 
       const row = document.createElement('div');
       row.className = `location-row location-card ${isSelected ? 'selected' : ''}`;
@@ -812,9 +821,8 @@
             <span class="loc-status ${isOptimal ? 'mint' : ''}">${statusText}</span>
           </div>
         </div>
-        <div class="loc-badges">
-          <div class="loc-badge-top"><i class="fa-solid fa-shield-halved"></i></div>
-          <div class="loc-badge-bottom"><i class="fa-regular fa-face-smile"></i></div>
+        <div class="loc-badges font-mono" title="Connected edges (vertex degree)">
+          <span>${degree}e</span>
         </div>
       `;
 
@@ -948,7 +956,7 @@
 
       if (!result.found) {
         showToast(
-          `No viable path found between nodes using ${result.algorithm_name || 'selected algorithm'}. Road closures may have partitioned the graph!`,
+          `No viable path found between nodes using ${result.algorithm_name || 'selected algorithm'}. Road closures may have partitioned the graph.`,
           'error',
           'Path Blocked / Disconnected'
         );
@@ -1519,7 +1527,7 @@
       // Automatically compute initial route
       await computeRoute();
 
-      showToast(`Active preset: ${presetId.replace('_', ' ').toUpperCase()}`, 'success');
+      showToast(`Loaded preset: ${presetId.replace('_', ' ')}`, 'success');
     } catch (err) {
       showToast(`Failed to load preset: ${err.message}`, 'error');
     }
@@ -1707,7 +1715,7 @@
       closeToolsDrawer();
       e.target.reset();
       await refreshGraphData();
-      showToast(`Vertex '${name}' added to graph topology!`, 'success');
+      showToast(`Added vertex '${name}' to graph`, 'success');
     } catch (err) {
       showToast(`Failed to add node: ${err.message}`, 'error');
     }
@@ -1744,7 +1752,7 @@
       closeToolsDrawer();
       e.target.reset();
       await refreshGraphData();
-      showToast(`Road '${road_name || 'Corridor'}' connected in graph!`, 'success');
+      showToast(`Connected '${road_name || 'Corridor'}'`, 'success');
     } catch (err) {
       showToast(`Failed to connect edge: ${err.message}`, 'error');
     }
@@ -1842,7 +1850,7 @@
     const codeBlock = document.getElementById('graph-json-code');
     if (!codeBlock) return;
     navigator.clipboard.writeText(codeBlock.textContent).then(() => {
-      showToast('Graph JSON copied to clipboard!', 'success');
+      showToast('Copied graph JSON to clipboard', 'success');
     }).catch(() => {
       showToast('Failed to copy to clipboard', 'error');
     });

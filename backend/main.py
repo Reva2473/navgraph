@@ -56,6 +56,7 @@ app_state = AppState(default_preset="india_highways")
 # ==============================================================================
 
 app = FastAPI(
+    redirect_slashes=False,
     title="Interactive Route & Campus Navigator API",
     description=r"""
 ### Smart Route Optimization & Graph Analytics Engine
@@ -245,6 +246,9 @@ def get_presets() -> Dict[str, Any]:
 
 
 @app.post("/api/presets/{preset_id}/load", tags=["System & Health"], summary="Load Map Preset")
+@app.get("/api/presets/{preset_id}/load", tags=["System & Health"], summary="Load Map Preset (GET fallback)")
+@app.post("/api/presets/{preset_id}/load/", include_in_schema=False)
+@app.get("/api/presets/{preset_id}/load/", include_in_schema=False)
 def load_preset(
     preset_id: str = Path(..., description="Preset ID: 'india_highways' or 'campus_navigator'")
 ) -> Dict[str, Any]:
@@ -282,6 +286,7 @@ def get_graph() -> Dict[str, Any]:
 
 
 @app.post("/api/route", tags=["Routing & Pathfinding"], summary="Compute Optimal Route")
+@app.post("/api/route/", include_in_schema=False)
 def compute_route(req: RouteRequest) -> Dict[str, Any]:
     """
     Execute shortest path search between vertices or across multi-stop waypoints.
@@ -418,6 +423,7 @@ def compute_multi_stop(req: MultiStopRequest) -> Dict[str, Any]:
 
 
 @app.post("/api/compare", tags=["Routing & Pathfinding"], summary="Benchmark All Pathfinding Algorithms")
+@app.post("/api/compare/", include_in_schema=False)
 def benchmark_compare(req: CompareRequest) -> Dict[str, Any]:
     """
     Run Dijkstra, A*, BFS, and DFS simultaneously on the current graph topology.
@@ -584,6 +590,9 @@ def update_edge_traffic(req: EdgeTrafficUpdateRequest) -> Dict[str, Any]:
 
 
 @app.post("/api/graph/simulate-traffic", tags=["Traffic & Congestion"], summary="Simulate Live Traffic & Roadblocks")
+@app.post("/api/graph/simulate-traffic/", include_in_schema=False)
+@app.get("/api/graph/simulate-traffic", include_in_schema=False)
+@app.get("/api/graph/simulate-traffic/", include_in_schema=False)
 def simulate_traffic(
     req: Optional[RandomTrafficRequest] = Body(None),
     reset: bool = Query(False, description="Reset all traffic and closures to normal if True"),
@@ -665,6 +674,9 @@ def simulate_traffic_alias(
 
 
 @app.post("/api/graph/reset-traffic", tags=["Traffic & Congestion"], summary="Reset All Traffic to Normal")
+@app.post("/api/graph/reset-traffic/", include_in_schema=False)
+@app.get("/api/graph/reset-traffic", include_in_schema=False)
+@app.get("/api/graph/reset-traffic/", include_in_schema=False)
 def reset_traffic() -> Dict[str, Any]:
     """Restore all graph edges to baseline traffic multiplier (1.0) and unblocked state."""
     for u in app_state.graph.adjacency_list:

@@ -602,20 +602,10 @@
       let opacity = 0.8;
 
       if (edge.is_blocked) {
-        edgeColor = '#f43f5e';
-        weight = 3.5;
+        edgeColor = 'rgba(244, 63, 94, 0.65)';
+        weight = 2.5;
         dashArray = '4, 8';
         opacity = 0.95;
-      } else if (state.showTraffic && edge.traffic_multiplier > 1.0) {
-        if (edge.traffic_multiplier >= 1.6) {
-          edgeColor = '#f97316';
-          weight = 3.5;
-          opacity = 0.9;
-        } else {
-          edgeColor = '#f59e0b';
-          weight = 3;
-          opacity = 0.85;
-        }
       }
 
       // Invisible wide hit-area
@@ -689,7 +679,7 @@
             </div>
           </div>
         `,
-        iconSize: [44, 70],
+        iconSize: [44, 44],
         iconAnchor: [22, 22]
       });
 
@@ -1233,8 +1223,15 @@
       distContainer.innerHTML = '<div class="empty-state">No distance relaxations recorded for this step.</div>';
     }
 
-    // 4. Render Step Highlight on Map
-    renderStepOnMap(step);
+    // 4. Render Step Highlight on Map (only when player drawer is open or playing)
+    const playerDrawer = document.getElementById('dsa-player-drawer');
+    const isPlayerVisible = playerDrawer && playerDrawer.classList.contains('open');
+    if (isPlayerVisible || state.stepPlayer.isPlaying) {
+      renderStepOnMap(step);
+    } else {
+      state.layers.stepExploration.clearLayers();
+      state.layers.stepCurrentMarker.clearLayers();
+    }
   }
 
   function renderStepOnMap(step) {
@@ -1840,10 +1837,13 @@
   function openPlayerDrawer() {
     closeToolsDrawer();
     document.getElementById('dsa-player-drawer')?.classList.add('open');
+    updatePlayerUI();
   }
 
   function closePlayerDrawer() {
     document.getElementById('dsa-player-drawer')?.classList.remove('open');
+    state.layers.stepExploration.clearLayers();
+    state.layers.stepCurrentMarker.clearLayers();
   }
 
   function openToolsDrawer() {

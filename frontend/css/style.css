@@ -1034,43 +1034,29 @@ select option:focus,
 }
 
 .outlet-marker-wrapper {
+  position: relative;
+  width: 44px;
+  height: 44px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transform: translate(-50%, -50%);
   user-select: none;
-  transition: transform 0.2s ease;
 }
 
 .outlet-marker-wrapper:hover {
-  transform: translate(-50%, -50%) scale(1.08);
   z-index: 1000 !important;
 }
 
-.outlet-marker-wrapper:hover .outlet-marker-circle {
-  transform: scale(1.18);
-  border-color: var(--accent-mint);
-  box-shadow: 0 0 22px var(--accent-mint-glow), 0 8px 20px rgba(0, 0, 0, 0.65);
-}
-
-.marker-hover-active {
-  z-index: 10000 !important;
-}
-
-.marker-hover-active .outlet-marker-wrapper {
-  transform: translate(-50%, -50%) scale(1.08);
-}
-
+.outlet-marker-wrapper:hover .outlet-marker-circle,
 .marker-hover-active .outlet-marker-circle {
-  transform: scale(1.18) !important;
+  transform: scale(1.16) !important;
   border-color: var(--accent-mint) !important;
   box-shadow: 0 0 24px var(--accent-mint-glow), 0 10px 24px rgba(0, 0, 0, 0.75) !important;
 }
 
-.marker-hover-active .outlet-marker-pill {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
+.marker-hover-active {
+  z-index: 10000 !important;
 }
 
 .outlet-marker-circle {
@@ -1093,7 +1079,10 @@ select option:focus,
 }
 
 .outlet-marker-pill {
-  margin-top: 6px;
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 12px;
   padding: 3px 10px;
   font-size: 11px;
@@ -1105,6 +1094,11 @@ select option:focus,
   white-space: nowrap;
   pointer-events: none;
   transition: all 0.2s ease;
+}
+
+.marker-hover-active .outlet-marker-pill {
+  transform: translateX(-50%) translateY(2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
 }
 
 /* Inactive marker pill: dark matte */

@@ -375,3 +375,35 @@ class TestFrontendDOMAndJSIntegrity:
         assert "NSUT Dwarka Campus" in html_content
         assert "DEFAULT_CENTER: [28.6103, 77.0375]" in js_content or "[28.6103, 77.0375]" in js_content
 
+    def test_only_selected_route_highlighted_and_marker_anchor_aligned(self):
+        """
+        Verify:
+        1. .outlet-marker-wrapper in frontend/css/style.css does NOT contain translate(-50%, -50%).
+        2. iconSize: [44, 44] and iconAnchor: [22, 22] are used in frontend/js/app.js.
+        3. updatePlayerUI checks isPlayerVisible || state.stepPlayer.isPlaying before calling renderStepOnMap.
+        4. Background graph edges do NOT highlight unselected traffic roads in amber/orange.
+        """
+        with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
+            css_content = f.read()
+
+        with open(APP_JS_PATH, "r", encoding="utf-8") as f:
+            js_content = f.read()
+
+        # 1. No translate(-50%, -50%) on outlet marker wrapper
+        assert "translate(-50%, -50%)" not in css_content
+        assert ".outlet-marker-wrapper" in css_content
+        assert "width: 44px" in css_content
+        assert "height: 44px" in css_content
+
+        # 2. iconSize and iconAnchor are [44, 44] and [22, 22]
+        assert "iconSize: [44, 44]" in js_content
+        assert "iconAnchor: [22, 22]" in js_content
+
+        # 3. updatePlayerUI gates renderStepOnMap behind drawer open state or isPlaying
+        assert "isPlayerVisible || state.stepPlayer.isPlaying" in js_content
+        assert "renderStepOnMap(step)" in js_content
+
+        # 4. Background graph edges do not light up in amber/orange based on traffic
+        assert "edge.traffic_multiplier > 1.0" not in js_content
+
+

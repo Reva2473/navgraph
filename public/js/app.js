@@ -209,8 +209,9 @@
       });
     },
 
-    getGraph() {
-      return this.request('/api/graph');
+    getGraph(presetId) {
+      const q = presetId ? `?preset=${encodeURIComponent(presetId)}` : '';
+      return this.request(`/api/graph${q}`);
     },
 
     computeRoute(body) {
@@ -947,7 +948,8 @@
       target,
       waypoints: state.waypoints.filter(w => !!w),
       algorithm: state.selectedAlgorithm,
-      weight_mode: state.weightMode
+      weight_mode: state.weightMode,
+      preset: state.activePreset
     };
 
     try {
@@ -1416,7 +1418,8 @@
       source,
       target,
       waypoints: state.waypoints.filter(w => !!w),
-      weight_mode: state.weightMode
+      weight_mode: state.weightMode,
+      preset: state.activePreset
     };
 
     openModal('modal-compare');
@@ -1500,7 +1503,7 @@
   async function loadPreset(presetId) {
     try {
       showToast(`Loading preset '${presetId}'...`, 'info');
-      await API.loadPreset(presetId);
+      const res = await API.loadPreset(presetId);
       state.activePreset = presetId;
 
       // Update preset dropdown if different
@@ -1535,7 +1538,7 @@
 
   async function refreshGraphData() {
     try {
-      const res = await API.getGraph();
+      const res = await API.getGraph(state.activePreset);
       const graphData = (res && res.graph) ? res.graph : res;
       state.graph = {
         nodes: Array.isArray(graphData?.nodes) ? graphData.nodes : [],

@@ -10,7 +10,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from backend.main import app
+from backend.main import app, VercelPathRestoreMiddleware as VercelASGIApp
 
-# Vercel's Python runtime automatically looks for the WSGI/ASGI 'app' attribute
-__all__ = ["app"]
+# Vercel's Python runtime inspects 'app' directly as a FastAPI instance
+__all__ = ["app", "VercelASGIApp"]

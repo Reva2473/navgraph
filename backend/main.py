@@ -11,7 +11,8 @@ import os
 import random
 import re
 import time
-from typing import Any, Dict, List, Optional
+import urllib.parse
+from typing import Any, Callable, Dict, List, Optional
 
 from fastapi import Body, FastAPI, HTTPException, Path, Query, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -94,6 +95,50 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+class VercelPathRestoreMiddleware:
+    """
+    ASGI Middleware that restores the original request path when Vercel rewrites
+    `/api/(.*)` -> `/api/index.py?__vercel_path=/api/$1`.
+    """
+
+    def __init__(self, app: Any):
+        self.app = app
+
+    async def __call__(self, scope: Dict[str, Any], receive: Callable, send: Callable) -> None:
+        if scope.get("type") == "http":
+            query_bytes = scope.get("query_string", b"")
+            qs_str = (
+                query_bytes.decode("utf-8", errors="replace")
+                if isinstance(query_bytes, bytes)
+                else str(query_bytes or "")
+            )
+            if "__vercel_path=" in qs_str:
+                params = urllib.parse.parse_qsl(qs_str, keep_blank_values=True)
+                target_path = None
+                remaining_params = []
+                for k, v in params:
+                    if k == "__vercel_path" and target_path is None:
+                        target_path = v
+                    else:
+                        remaining_params.append((k, v))
+                if target_path:
+                    if "?" in target_path:
+                        target_path, extra_qs = target_path.split("?", 1)
+                        if extra_qs:
+                            remaining_params.extend(
+                                urllib.parse.parse_qsl(extra_qs, keep_blank_values=True)
+                            )
+                    if not target_path.startswith("/"):
+                        target_path = "/" + target_path
+                    scope["path"] = target_path
+                    scope["raw_path"] = target_path.encode("utf-8")
+                    scope["query_string"] = urllib.parse.urlencode(remaining_params).encode("utf-8")
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(VercelPathRestoreMiddleware)
+
 # Prevent Browser Stale Asset Caching (Cache-Busting Middleware)
 @app.middleware("http")
 async def disable_static_cache(request, call_next):
@@ -122,6 +167,10 @@ class RouteRequest(BaseModel):
         "effective",
         description="Weight metric: 'effective' (accounts for traffic and closures) or 'distance' (raw physical km)",
     )
+    preset: Optional[str] = Field(
+        None,
+        description="Optional active preset ID for stateless serverless routing",
+    )
 
 
 class MultiStopRequest(BaseModel):
@@ -139,6 +188,10 @@ class MultiStopRequest(BaseModel):
         "effective",
         description="Weight metric: 'effective' or 'distance'",
     )
+    preset: Optional[str] = Field(
+        None,
+        description="Optional active preset ID for stateless serverless routing",
+    )
 
 
 class CompareRequest(BaseModel):
@@ -147,6 +200,10 @@ class CompareRequest(BaseModel):
     weight_mode: str = Field(
         "effective",
         description="Weight calculation mode: 'effective' (traffic-weighted) or 'distance' (raw base km)",
+    )
+    preset: Optional[str] = Field(
+        None,
+        description="Optional active preset ID for stateless serverless routing",
     )
 
 
@@ -208,6 +265,32 @@ def _slugify_node_id(name: str, existing_ids: set) -> str:
     return candidate
 
 
+def _ensure_preset_loaded(
+    preset: Optional[str] = None,
+    required_nodes: Optional[List[str]] = None,
+) -> None:
+    """
+    Ensure the appropriate map preset is loaded into memory for stateless serverless execution.
+    - If `preset` is provided and in PRESETS_METADATA, reloads it if not already active.
+    - Else if `required_nodes` are specified and missing from the active graph, searches other
+      presets and reloads if an alternate preset contains all required nodes.
+    """
+    if preset and preset.lower().strip() in PRESETS_METADATA:
+        target_preset = preset.lower().strip()
+        if app_state.current_preset != target_preset:
+            app_state.reload_preset(target_preset)
+    elif required_nodes:
+        missing = [nid for nid in required_nodes if nid and nid not in app_state.graph.nodes]
+        if missing:
+            for other_key in PRESETS_METADATA:
+                if other_key == app_state.current_preset:
+                    continue
+                candidate_graph = load_preset_graph(other_key)
+                if all(nid in candidate_graph.nodes for nid in required_nodes if nid):
+                    app_state.reload_preset(other_key)
+                    break
+
+
 # ==============================================================================
 # REST API Endpoints: System & Health
 # ==============================================================================
@@ -229,7 +312,6 @@ def get_health() -> Dict[str, Any]:
 
 
 @app.get("/api", include_in_schema=False)
-@app.get("/api/index.py", include_in_schema=False)
 def get_api_root() -> Dict[str, Any]:
     """Return health diagnostic status when hitting /api directly."""
     return get_health()
@@ -276,8 +358,12 @@ def load_preset(
 # ==============================================================================
 
 @app.get("/api/graph", tags=["Routing & Pathfinding"], summary="Retrieve Graph Topology")
-def get_graph() -> Dict[str, Any]:
+def get_graph(
+    preset: Optional[str] = Query(None, description="Optional active preset ID to load before returning"),
+) -> Dict[str, Any]:
     """Return complete vertex list, deduplicated edges, adjacency lists, and connectivity stats."""
+    if preset:
+        _ensure_preset_loaded(preset=preset)
     return {
         "active_preset": app_state.current_preset,
         "preset_metadata": PRESETS_METADATA.get(app_state.current_preset, {}),
@@ -311,6 +397,8 @@ def compute_route(req: RouteRequest) -> Dict[str, Any]:
     elif req.target and not req.source and raw_waypoints:
         if raw_waypoints[-1] != req.target:
             raw_waypoints.append(req.target)
+
+    _ensure_preset_loaded(req.preset, raw_waypoints)
 
     if len(raw_waypoints) < 2:
         raise HTTPException(
@@ -392,6 +480,8 @@ def compute_multi_stop(req: MultiStopRequest) -> Dict[str, Any]:
         if raw_waypoints[-1] != req.target:
             raw_waypoints.append(req.target)
 
+    _ensure_preset_loaded(req.preset, raw_waypoints)
+
     if len(raw_waypoints) < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -431,6 +521,8 @@ def benchmark_compare(req: CompareRequest) -> Dict[str, Any]:
     """
     src = req.source.strip()
     dst = req.target.strip()
+
+    _ensure_preset_loaded(req.preset, [src, dst])
 
     if src not in app_state.graph.nodes:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Source node '{src}' does not exist.")

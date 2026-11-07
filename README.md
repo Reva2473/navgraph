@@ -47,39 +47,41 @@ This project fulfills and unifies the requirements for academic Data Structures 
 
 ## 🏛 Project Architecture
 
+### System Flowchart
+
 ```mermaid
 flowchart TD
-    subgraph Client ["Frontend Client (Leaflet.js UI)"]
-        UI[Interactive Control Dashboard]
-        Map[Leaflet Geospatial Map Canvas]
-        Stats[Performance Comparison Matrix & Frontier Replayer]
+    subgraph Client["Frontend Client (Leaflet.js UI)"]
+        UI["Interactive Control Dashboard"]
+        Map["Leaflet Geospatial Map Canvas"]
+        Stats["Performance Comparison Matrix & Step Player"]
     end
 
-    subgraph API ["FastAPI Web Service (backend/main.py)"]
-        Router[REST API Endpoints]
-        CORS[CORS Middleware & Static File Server]
-        Swagger[OpenAPI / Swagger Spec]
+    subgraph API["FastAPI Web Service (backend/main.py)"]
+        Router["REST API Endpoints"]
+        CORS["CORS Middleware & Static File Server"]
+        Swagger["OpenAPI / Swagger Spec (/docs)"]
     end
 
-    subgraph Engine ["Custom DSA Engine (Pure Python)"]
-        Graph[WeightedGraph (Adjacency List)]
-        Heap[Binary MinHeap (Priority Queue)]
-        Queue[Linked FIFOQueue]
-        Stack[Dynamic LIFOStack]
-        Geo[Haversine Spherical Distance Formula]
+    subgraph Engine["Custom DSA Engine (Pure Python)"]
+        Graph["WeightedGraph (Adjacency List)"]
+        Heap["Binary MinHeap (Priority Queue)"]
+        Queue["Linked FIFOQueue"]
+        Stack["Dynamic LIFOStack"]
+        Geo["Haversine Spherical Distance Formula"]
     end
 
-    subgraph Algorithms ["Algorithmic Suite (backend/dsa/algorithms.py)"]
-        Dijkstra[Dijkstra's Shortest Path]
-        AStar[A* Search (Haversine Heuristic)]
-        BFS[Breadth-First Search (Hop-Optimal)]
-        DFS[Depth-First Search (Exploratory)]
-        MultiStop[Multi-Stop Waypoint TSP-Chaining]
+    subgraph Algorithms["Algorithmic Suite (backend/dsa/algorithms.py)"]
+        Dijkstra["Dijkstra's Shortest Path"]
+        AStar["A* Search (Haversine Heuristic)"]
+        BFS["Breadth-First Search (Hop-Optimal)"]
+        DFS["Depth-First Search (Exploratory)"]
+        MultiStop["Multi-Stop Waypoint TSP-Chaining"]
     end
 
-    subgraph Presets ["Geospatial Datasets (backend/data/presets.py)"]
-        India[National Highways of India (20 Cities, 35+ Corridors)]
-        Campus[Smart University Campus (15 Landmarks, 25 Pathways)]
+    subgraph Presets["Geospatial Datasets (backend/data/presets.py)"]
+        India["National Highways of India (18 Cities, NH48/NH44/NH16)"]
+        Campus["NSUT Dwarka Campus (14 Landmarks, Sector 3 New Delhi)"]
     end
 
     UI -->|Async HTTP Fetch| Router
@@ -92,6 +94,34 @@ flowchart TD
     Presets --> Graph
     Router -->|JSON Responses| Stats
     Router -->|Geo Coordinates & Paths| Map
+```
+
+### Directory Structure
+
+```text
+navgraph/
+├── backend/
+│   ├── data/
+│   │   └── presets.py             # India Highways (18 cities) & NSUT Dwarka campus graph
+│   ├── dsa/
+│   │   ├── algorithms.py          # Dijkstra, A*, BFS, DFS, and comparison benchmarks
+│   │   ├── graph.py               # WeightedGraph, Node, Edge, and Haversine formula
+│   │   └── structures.py          # Array-backed MinHeap, Linked FIFOQueue, LIFOStack
+│   └── main.py                    # FastAPI server, REST routes & static asset serving
+├── frontend/
+│   ├── css/
+│   │   └── style.css              # Dark-matte cartography stylesheet & design tokens
+│   ├── js/
+│   │   └── app.js                 # Leaflet map engine, CARTO dark basemap, DSA player
+│   └── index.html                 # Single-page interface & drawer dashboards
+├── tests/
+│   ├── test_api.py                # FastAPI endpoint integration test suite
+│   ├── test_dsa_and_api.py        # Core DSA structure & optimality test suite
+│   └── test_frontend_contract.py  # End-to-end API-frontend contract verification
+├── Dockerfile                     # Production containerization
+├── requirements.txt               # Python package dependencies
+├── run_project.py                 # Single-command launcher
+└── README.md                      # Comprehensive system documentation
 ```
 
 ---
@@ -185,12 +215,12 @@ The backend serves an automated interactive Swagger UI at `http://localhost:8000
 ## 🗺 Preset Datasets
 
 ### 1. National Highways of India (`india_highways`)
-- **20 Major Metro & Transit Hubs**: Delhi, Jaipur, Ahmedabad, Mumbai, Pune, Bengaluru, Chennai, Hyderabad, Kolkata, Lucknow, Varanasi, Chandigarh, Bhopal, Nagpur, etc.
-- **35+ Real-world Corridors**: Modeled after Golden Quadrilateral (NH48, NH44, NH19, NH16) with accurate latitude/longitude and highway speed limits (80–120 km/h).
+- **18 Major Metro & Transit Hubs**: New Delhi, Chandigarh, Jaipur, Lucknow, Ahmedabad, Bhopal, Patna, Guwahati, Kolkata, Mumbai, Pune, Nagpur, Bhubaneswar, Hyderabad, Visakhapatnam, Bengaluru, Chennai, Kochi.
+- **Real-world Corridors**: Modeled after the Golden Quadrilateral and major National Highways (NH48, NH44, NH19, NH16) with accurate latitude/longitude, highway speed limits (80–120 km/h), and coastal geometry overrides preventing routes from cutting across the Bay of Bengal.
 
-### 2. Smart University Campus (`campus_navigator`)
-- **15 Campus Landmarks**: Main Gate, Administrative Block, Central Library, Computer Science Department, Electronics Wing, Mechanical Labs, Student Center, Sports Arena, Hostels A/B/C, Cafeteria, Innovation Incubator.
-- **25 Internal Walkways & Cycle Paths**: Modeled with realistic pedestrian and cycle speeds (5–20 km/h).
+### 2. NSUT Dwarka Campus (`campus_navigator`)
+- **14 Campus Landmarks (Sector 3, Dwarka, New Delhi)**: NSUT Main Gate (Azad Hind Fauj Marg), Nescii Lawns & Netaji Statue, Administrative Block (VC Office), Central Library & SAC, Block 5 (CSE & IT Dept), Block 4 (ECE & Biotech Dept), Block 6 & Connecting Block (ICE/EE), APJ Abdul Kalam Lecture Complex, Students' Centre (Amul & Canteen), North Scholars Hostel, South Residency Hostel, Olympic Sports Complex, 24x7 Campus Hospital, Dwarka Sector 14 Metro Station Gate.
+- **Internal Walkways & Campus Avenues**: Modeled with realistic pedestrian walking speeds (4–6 km/h) and real OpenStreetMap GPS coordinates.
 
 ---
 

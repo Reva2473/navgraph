@@ -1,8 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
   "functions": {
     "api/*.py": {
-      "includeFiles": "backend/**,frontend/**",
+      "includeFiles": "backend/**,public/**,frontend/**",
       "maxDuration": 15
     }
   },
@@ -22,22 +23,6 @@
     {
       "source": "/redoc",
       "destination": "/api/index.py"
-    },
-    {
-      "source": "/css/:path*",
-      "destination": "/frontend/css/:path*"
-    },
-    {
-      "source": "/js/:path*",
-      "destination": "/frontend/js/:path*"
-    },
-    {
-      "source": "/index.html",
-      "destination": "/frontend/index.html"
-    },
-    {
-      "source": "/",
-      "destination": "/frontend/index.html"
     }
   ]
 }

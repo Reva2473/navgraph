@@ -227,6 +227,13 @@ def get_health() -> Dict[str, Any]:
     }
 
 
+@app.get("/api", include_in_schema=False)
+@app.get("/api/index.py", include_in_schema=False)
+def get_api_root() -> Dict[str, Any]:
+    """Return health diagnostic status when hitting /api directly."""
+    return get_health()
+
+
 @app.get("/api/presets", tags=["System & Health"], summary="List Available Map Presets")
 def get_presets() -> Dict[str, Any]:
     """Retrieve catalog of pre-configured geographic and campus map datasets."""
@@ -676,9 +683,11 @@ def reset_traffic() -> Dict[str, Any]:
 # ==============================================================================
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+PUBLIC_DIR = os.path.join(PROJECT_ROOT, "public")
 FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
-CSS_DIR = os.path.join(FRONTEND_DIR, "css")
-JS_DIR = os.path.join(FRONTEND_DIR, "js")
+STATIC_DIR = PUBLIC_DIR if os.path.isdir(PUBLIC_DIR) else FRONTEND_DIR
+CSS_DIR = os.path.join(STATIC_DIR, "css")
+JS_DIR = os.path.join(STATIC_DIR, "js")
 
 # Ensure directories exist so StaticFiles mount does not fail
 os.makedirs(CSS_DIR, exist_ok=True)
@@ -691,9 +700,10 @@ app.mount("/js", StaticFiles(directory=JS_DIR), name="js")
 @app.get("/", include_in_schema=False)
 def serve_index() -> Any:
     """Serve the interactive map client UI or an informative onboarding splash screen."""
-    index_html = os.path.join(FRONTEND_DIR, "index.html")
-    if os.path.isfile(index_html):
-        return FileResponse(index_html)
+    for candidate_dir in [PUBLIC_DIR, FRONTEND_DIR]:
+        index_html = os.path.join(candidate_dir, "index.html")
+        if os.path.isfile(index_html):
+            return FileResponse(index_html)
 
     # Informative fallback if frontend client is loading
     return HTMLResponse(

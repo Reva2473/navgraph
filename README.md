@@ -9,20 +9,21 @@ An academic map navigation engine and data structure visualizer built from first
 
 ---
 
-## 📑 Table of Contents
-1. [Academic Lab Mapping (Experiments 14 & 15)](#-academic-lab-mapping)
-2. [Project Architecture](#-project-architecture)
-3. [Core Data Structures Implemented from Scratch](#-core-data-structures-implemented-from-scratch)
-4. [Pathfinding Algorithms & Theoretical Comparison](#-pathfinding-algorithms--theoretical-comparison)
-5. [REST API Reference](#-rest-api-reference)
-6. [Preset Datasets](#-preset-datasets)
-7. [Installation & Execution Guide](#-installation--execution-guide)
-8. [Automated Verification & Test Suite](#-automated-verification--test-suite)
-9. [Viva-Voce & Lab Evaluation Q&A](#-viva-voce--lab-evaluation-qa)
+## Table of Contents
+1. [Academic Lab Mapping (Experiments 14 & 15)](#academic-lab-mapping)
+2. [Project Architecture](#project-architecture)
+3. [Core Data Structures Implemented from Scratch](#core-data-structures-implemented-from-scratch)
+4. [Pathfinding Algorithms & Theoretical Comparison](#pathfinding-algorithms--theoretical-comparison)
+5. [REST API Reference](#rest-api-reference)
+6. [Preset Datasets](#preset-datasets)
+7. [Installation & Execution Guide](#installation--execution-guide)
+8. [Automated Verification & Test Suite](#automated-verification--test-suite)
+9. [Viva-Voce & Lab Evaluation Q&A](#viva-voce--lab-evaluation-qa)
+10. [Team](#team)
 
 ---
 
-## 🎯 Academic Lab Mapping
+## Academic Lab Mapping
 
 This project fulfills and unifies the requirements for academic Data Structures & Algorithms Lab Experiments:
 
@@ -44,7 +45,7 @@ This project fulfills and unifies the requirements for academic Data Structures 
 
 ---
 
-## 🏛 Project Architecture
+## Project Architecture
 
 ### System Flowchart
 
@@ -129,7 +130,7 @@ navgraph/
 
 ---
 
-## 📦 Core Data Structures Implemented from Scratch
+## Core Data Structures Implemented from Scratch
 
 All data structures are implemented strictly in pure Python standard library types without external algorithmic packages (no `networkx`, no `heapq`).
 
@@ -177,7 +178,7 @@ All data structures are implemented strictly in pure Python standard library typ
 
 ---
 
-## 🚀 Pathfinding Algorithms & Theoretical Comparison
+## Pathfinding Algorithms & Theoretical Comparison
 
 | Algorithm | Time Complexity | Space Complexity | Optimality Guarantee | Completeness | Heuristic Driven? | Primary Real-World Application |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -193,7 +194,7 @@ where $g(n)$ is the exact cost incurred from the start node to $n$, and $h(n)$ i
 
 ---
 
-## 📡 REST API Reference
+## REST API Reference
 
 The backend serves an automated interactive Swagger UI at `http://localhost:8000/docs` and Redoc at `http://localhost:8000/redoc`.
 
@@ -223,7 +224,7 @@ The backend serves an automated interactive Swagger UI at `http://localhost:8000
 
 ---
 
-## 🗺 Preset Datasets
+## Preset Datasets
 
 ### 1. National Highways of India (`india_highways`)
 - **18 Major Metro & Transit Hubs**: New Delhi, Chandigarh, Jaipur, Lucknow, Ahmedabad, Bhopal, Patna, Guwahati, Kolkata, Mumbai, Pune, Nagpur, Bhubaneswar, Hyderabad, Visakhapatnam, Bengaluru, Chennai, Kochi.
@@ -235,7 +236,7 @@ The backend serves an automated interactive Swagger UI at `http://localhost:8000
 
 ---
 
-## 💻 Installation & Execution Guide
+## Installation & Execution Guide
 
 ### Prerequisites
 - Python 3.10 or higher
@@ -268,7 +269,7 @@ uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 
 ---
 
-## 🧪 Automated Verification & Test Suite
+## Automated Verification & Test Suite
 
 The project includes an exhaustive automated test suite covering all data structures, pathfinding algorithms, geospatial formulas, dynamic rerouting, and API endpoints.
 
@@ -288,7 +289,7 @@ pytest -v
 
 ---
 
-## 🎓 Viva-Voce & Lab Evaluation Q&A
+## Viva-Voce & Lab Evaluation Q&A
 
 ### Q1: Why does A\* search explore significantly fewer nodes than Dijkstra’s algorithm while preserving optimality?
 **Answer:**
@@ -342,7 +343,18 @@ In `WeightedGraph`, each edge possesses an `is_blocked` boolean attribute and a 
 
 ---
 
-## 👥 Contributors & Academic Credits
-- **Course**: Data Structures & Algorithms Lab (CS201 / CS202)
+## Team
+
+| Name | Roll Number |
+| :--- | :--- |
+| Revanshu Ranjan | 2025UEE4570 |
+| Keshav Gupta | 2025UEE4564 |
+| Aryan Jain | 2025UEE4565 |
+| Jatin | 2025UEE4560 |
+
+---
+
+## Contributors & Academic Credits
+- **Course**: Data Structures & Algorithms Lab (EEITC302)
 - **Experiments**: Experiment 14 (Map Navigator API Backend) & Experiment 15 (Full-Stack Frontend Integration)
 - **Implementation**: Pure Python DSA Engine & Modern Web Integration

@@ -18,8 +18,7 @@ An academic map navigation engine and data structure visualizer built from first
 6. [Preset Datasets](#preset-datasets)
 7. [Installation & Execution Guide](#installation--execution-guide)
 8. [Automated Verification & Test Suite](#automated-verification--test-suite)
-9. [Viva-Voce & Lab Evaluation Q&A](#viva-voce--lab-evaluation-qa)
-10. [Team](#team)
+9. [Team](#team)
 
 ---
 

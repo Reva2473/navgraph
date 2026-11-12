@@ -164,7 +164,7 @@ All data structures are implemented strictly in pure Python standard library typ
 
 ### 4. Geospatial Weighted Graph (`WeightedGraph`)
 * **File**: `backend/dsa/graph.py`
-* **Theory**: Adjacency list representation storing vertices (nodes) and directed/undirected edges.
+* **Theory**: Adjacency list representation  storing vertices (nodes) and directed/undirected edges.
 * **Features**:
   - **Node**: `{id, label, lat, lon}`.
   - **Edge**: `{u, v, distance, speed_limit, traffic_multiplier, is_blocked, one_way}`.

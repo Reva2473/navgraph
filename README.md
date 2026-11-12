@@ -295,7 +295,6 @@ pytest -v
 | :--- | :--- |
 | Revanshu Ranjan | 2025UEE4570 |
 | Keshav Gupta | 2025UEE4564 |
-| Aryan Jain | 2025UEE4565 |
 | Jatin | 2025UEE4560 |
 | Sneha Baghel | 2025UEE4571 |
 
